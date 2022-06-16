@@ -1,6 +1,6 @@
 <template>
   <div class="flex h-full max-h-full flex-col bg-brown-200">
-    <div class="m-auto w-[max(300px,70%)] max-w-[500px]">
+    <div class="m-auto w-[max(280px,70%)] max-w-[500px]">
       <div class="grid grid-cols-2 grid-rows-2">
         <Header class="row-span-2" />
         <Score class="self-center" />
@@ -19,7 +19,7 @@
 import Board from "./components/Board.vue"
 import Score from "./components/Score.vue"
 import Header from "./components/Header.vue"
-import { onBeforeMount, onBeforeUnmount, ref } from "vue"
+import { onBeforeMount, onBeforeUnmount } from "vue"
 import { Axis, useGameStore } from "./stores/game"
 import { SwipeDirection, useSwipe } from "@vueuse/core"
 const gameStore = useGameStore()
@@ -48,9 +48,27 @@ const { stop: removeSwipeListener } = useSwipe(document, {
   onSwipeEnd,
 })
 
+const unsubscribe = gameStore.$subscribe(
+  (a) => {
+    if ([a.events].flat().some((e) => [Axis.X, Axis.Y].includes(e.key))) {
+      addTile()
+    }
+  },
+  { flush: "post" }
+)
+
 onBeforeMount(() => document.addEventListener("keydown", omKeyDown))
 onBeforeUnmount(() => {
+  unsubscribe()
   removeSwipeListener()
   document.removeEventListener("keydown", omKeyDown)
 })
 </script>
+<style lang="scss">
+:root {
+  font-size: 14px;
+  @media (min-width: 768px) {
+    font-size: 16px;
+  }
+}
+</style>

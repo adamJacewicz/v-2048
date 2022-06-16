@@ -2,7 +2,7 @@
   <div
     :style="tilePosition"
     :class="[tile.value === 2 && 'new-tile']"
-    class="absolute m-1.5 flex h-[calc(25%-0.75rem)] w-[calc(25%-0.75rem)] origin-center text-5xl font-bold text-gray-600 transition-transform duration-200"
+    class="tile absolute m-1.5 flex h-[calc(25%-0.75rem)] w-[calc(25%-0.75rem)] origin-center text-5xl font-bold text-gray-600 transition-transform duration-200"
   >
     <div
       class="inner flex flex-1 items-center justify-center rounded-md transition-transform duration-200"
@@ -40,3 +40,33 @@ const bgClass = {
   2048: "bg-tile-2048",
 }
 </script>
+<style lang="scss" scoped>
+@mixin scale {
+  @keyframes scale {
+    0% {
+      transform: scale(0);
+    }
+    100% {
+      transform: scale(1);
+    }
+  }
+}
+
+@include scale;
+
+@keyframes overscale {
+  @include scale;
+  50% {
+    transform: scale(1.2);
+  }
+}
+
+.tile {
+  .inner {
+    animation: overscale 200ms;
+  }
+  &.new-tile .inner {
+    animation: scale 200ms;
+  }
+}
+</style>

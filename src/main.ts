@@ -9,9 +9,12 @@ const PersistState: PiniaPlugin = ({ options, store }) => {
     if (persistedState) {
       store.$state = JSON.parse(persistedState)
     }
-    store.$subscribe((_, state) => {
-      localStorage.setItem(store.$id, JSON.stringify(state))
-    })
+    store.$subscribe(
+      (_, state) => {
+        localStorage.setItem(store.$id, JSON.stringify(state))
+      },
+      { flush: "sync" }
+    )
   }
 }
 

@@ -51,7 +51,7 @@ export const useGameStore = defineStore("game", {
         state.tiles
           .reduce<Array<Array<Tile>>>(
             (acc, tile) => {
-              !tile.merged && acc[tile[constAxis]].push(tile)
+              acc[tile[constAxis]].push(tile)
               return acc
             },
             [[], [], [], [], []]
@@ -67,6 +67,7 @@ export const useGameStore = defineStore("game", {
                 const last = row[i - 1]
                 if (!last.merged && last.value === tile.value) {
                   this.addTile(last.x, last.y, last.value * 2)
+                  this.updateScore(last.value * 2)
                   last.merged = true
                   tile.merged = true
                   tile[axis] = last[axis]
@@ -76,7 +77,6 @@ export const useGameStore = defineStore("game", {
               }
             })
           })
-        this.addTile()
       })
     },
     addTile(x?: number, y?: number, value: number = 2): void {
@@ -87,7 +87,6 @@ export const useGameStore = defineStore("game", {
         y ?? randomPosition.y,
         value
       )
-      value > 2 && this.updateScore(value)
       this.tiles.push(newTile)
     },
   },
