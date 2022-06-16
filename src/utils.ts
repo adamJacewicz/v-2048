@@ -13,8 +13,3 @@ export const createTile = (x: number, y: number, value: number): Tile => ({
   merged: false,
   id: uuidv4(),
 })
-
-export const generateMatrix = (n: number): Array<[]> => {
-  const result = Array(n).fill(null)
-  return result.map(() => [])
-}

@@ -5,7 +5,7 @@
         <Header class="row-span-2" />
         <Score class="self-center" />
         <button
-          @click="reset"
+          @click="init"
           class="mt-auto ml-auto rounded-md border bg-brown-600 py-2 px-4 text-lg font-medium text-gray-100"
         >
           New game
@@ -19,24 +19,38 @@
 import Board from "./components/Board.vue"
 import Score from "./components/Score.vue"
 import Header from "./components/Header.vue"
-import { onBeforeMount, onBeforeUnmount } from "vue"
+import { onBeforeMount, onBeforeUnmount, ref } from "vue"
 import { Axis, useGameStore } from "./stores/game"
-
+import { SwipeDirection, useSwipe } from "@vueuse/core"
 const gameStore = useGameStore()
-const { move, addTile, reset } = gameStore
-const onKeyPress = ({ key }: KeyboardEvent) => {
-  const handlers: Record<string, () => void> = {
-    ArrowUp: () => move(Axis.Y, false),
-    ArrowDown: () => move(Axis.Y, true),
-    ArrowLeft: () => move(Axis.X, false),
-    ArrowRight: () => move(Axis.X, true),
-  }
-  key in handlers && handlers[key]()
+const { move, addTile, init } = gameStore
+
+const moveParams: Record<string, { axis: Axis; desc: boolean }> = {
+  UP: { axis: Axis.Y, desc: false },
+  DOWN: { axis: Axis.Y, desc: true },
+  LEFT: { axis: Axis.X, desc: false },
+  RIGHT: { axis: Axis.X, desc: true },
 }
-gameStore.$subscribe(({ events }) => {
-  ;[events].flat().some((e) => [Axis.X, Axis.Y].includes(e.key)) && addTile()
+
+const onSwipeEnd = (e: TouchEvent, direction: SwipeDirection) =>
+  moveHandler(direction)
+
+const omKeyDown = (e: KeyboardEvent) =>
+  moveHandler(e.key.toUpperCase().replace("ARROW", ""))
+
+const moveHandler = (direction: string): void => {
+  if (moveParams.hasOwnProperty(direction)) {
+    const { axis, desc } = moveParams[direction]
+    move(axis, desc)
+  }
+}
+const { stop: removeSwipeListener } = useSwipe(document, {
+  onSwipeEnd,
 })
 
-onBeforeMount(() => document.addEventListener("keydown", onKeyPress))
-onBeforeUnmount(() => document.removeEventListener("keydown", onKeyPress))
+onBeforeMount(() => document.addEventListener("keydown", omKeyDown))
+onBeforeUnmount(() => {
+  removeSwipeListener()
+  document.removeEventListener("keydown", omKeyDown)
+})
 </script>

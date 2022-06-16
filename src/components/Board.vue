@@ -12,7 +12,12 @@
       tag="div"
       class="absolute left-0 top-0 right-0 bottom-0 m-1.5 flex h-[calc(100%-0.75rem)]"
     >
-      <Tile :tile="tile" :key="tile.id" v-for="tile in gameStore.tiles" />
+      <Tile
+        v-show="!tile.merged"
+        :tile="tile"
+        :key="tile.id"
+        v-for="tile in gameStore.tiles"
+      />
     </transition-group>
   </div>
 </template>

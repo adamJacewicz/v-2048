@@ -29,7 +29,7 @@ export const useGameStore = defineStore("game", {
     best: 0,
   }),
   actions: {
-    reset(): void {
+    init(): void {
       this.tiles = []
       this.score = 0
       this.addTile()
@@ -45,9 +45,9 @@ export const useGameStore = defineStore("game", {
       this.tiles = this.tiles.filter(({ merged }) => !merged)
     },
     move(axis: Axis, desc = false): void {
-      this.removeMergedTiles()
       const constAxis = axis === Axis.X ? Axis.Y : Axis.X
       this.$patch((state) => {
+        this.removeMergedTiles()
         state.tiles
           .reduce<Array<Array<Tile>>>(
             (acc, tile) => {
@@ -76,6 +76,7 @@ export const useGameStore = defineStore("game", {
               }
             })
           })
+        this.addTile()
       })
     },
     addTile(x?: number, y?: number, value: number = 2): void {

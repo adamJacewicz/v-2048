@@ -1,15 +1,14 @@
 <template>
   <div
     :style="tilePosition"
-    v-show="!tile.merged"
     :class="[tile.value === 2 && 'new-tile']"
-    class="tile absolute m-1.5 flex h-[calc(25%-0.75rem)] w-[calc(25%-0.75rem)] origin-center text-5xl font-bold text-gray-600 transition-transform duration-200"
+    class="absolute m-1.5 flex h-[calc(25%-0.75rem)] w-[calc(25%-0.75rem)] origin-center text-5xl font-bold text-gray-600 transition-transform duration-200"
   >
     <div
       class="inner flex flex-1 items-center justify-center rounded-md transition-transform duration-200"
       :class="bgClass[tile.value]"
     >
-      {{ tile.value }} <br />
+      {{ tile.value }}
     </div>
   </div>
 </template>
@@ -41,7 +40,3 @@ const bgClass = {
   2048: "bg-tile-2048",
 }
 </script>
-<style lang="scss">
-.tile {
-}
-</style>
