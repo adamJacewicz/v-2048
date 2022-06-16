@@ -2,10 +2,10 @@
   <div
     :style="tilePosition"
     :class="[tile.value === 2 && 'new-tile']"
-    class="tile absolute m-1.5 flex h-[calc(25%-0.75rem)] w-[calc(25%-0.75rem)] origin-center text-5xl font-bold text-gray-600 transition-transform duration-200"
+    class="tile duration-200 absolute m-1.5 flex h-[calc(25%-0.75rem)] w-[calc(25%-0.75rem)] origin-center text-5xl font-bold text-gray-600 transition-transform"
   >
     <div
-      class="inner flex flex-1 items-center justify-center rounded-md transition-transform duration-200"
+      class="inner duration-200 flex flex-1 items-center justify-center rounded-md transition-transform"
       :class="bgClass[tile.value]"
     >
       {{ tile.value }}
@@ -26,7 +26,7 @@ const tilePosition = computed(() => {
   }
 })
 
-const bgClass = {
+const bgClass: any = {
   2: "bg-tile-2",
   4: "bg-tile-4",
   8: "bg-tile-8",

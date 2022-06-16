@@ -1,22 +1,8 @@
 import "./styles/tailwind.css"
 import { createApp } from "vue"
-import { createPinia, PiniaPlugin } from "pinia"
+import { createPinia } from "pinia"
 import App from "./App.vue"
+import { PersistedState } from "./plugins/persisted-state"
 
-const PersistState: PiniaPlugin = ({ options, store }) => {
-  if (options.persist) {
-    const persistedState = localStorage.getItem(store.$id)
-    if (persistedState) {
-      store.$state = JSON.parse(persistedState)
-    }
-    store.$subscribe(
-      (_, state) => {
-        localStorage.setItem(store.$id, JSON.stringify(state))
-      },
-      { flush: "sync" }
-    )
-  }
-}
-
-const pinia = createPinia().use(PersistState)
+const pinia = createPinia().use(PersistedState)
 createApp(App).use(pinia).mount("#app")

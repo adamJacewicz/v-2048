@@ -5,7 +5,7 @@
         <Header class="row-span-2" />
         <Score class="self-center" />
         <button
-          @click="init"
+          @click="gameStore.init"
           class="mt-auto ml-auto rounded-md border bg-brown-600 py-2 px-4 text-lg font-medium text-gray-100"
         >
           New game
@@ -19,11 +19,20 @@
 import Board from "./components/Board.vue"
 import Score from "./components/Score.vue"
 import Header from "./components/Header.vue"
-import { onBeforeMount, onBeforeUnmount } from "vue"
+import { onBeforeMount, onBeforeUnmount, watch } from "vue"
 import { Axis, useGameStore } from "./stores/game"
 import { SwipeDirection, useSwipe } from "@vueuse/core"
 const gameStore = useGameStore()
-const { move, addTile, init } = gameStore
+
+watch(
+  () => gameStore.tiles,
+  (curr, prev) => {
+    JSON.stringify(curr) !== JSON.stringify(prev) && gameStore.addTile()
+  },
+  {
+    flush: "post",
+  }
+)
 
 const moveParams: Record<string, { axis: Axis; desc: boolean }> = {
   UP: { axis: Axis.Y, desc: false },
@@ -41,34 +50,16 @@ const omKeyDown = (e: KeyboardEvent) =>
 const moveHandler = (direction: string): void => {
   if (moveParams.hasOwnProperty(direction)) {
     const { axis, desc } = moveParams[direction]
-    move(axis, desc)
+    gameStore.move(axis, desc)
   }
 }
 const { stop: removeSwipeListener } = useSwipe(document, {
   onSwipeEnd,
 })
 
-const unsubscribe = gameStore.$subscribe(
-  (a) => {
-    if ([a.events].flat().some((e) => [Axis.X, Axis.Y].includes(e.key))) {
-      addTile()
-    }
-  },
-  { flush: "post" }
-)
-
 onBeforeMount(() => document.addEventListener("keydown", omKeyDown))
 onBeforeUnmount(() => {
-  unsubscribe()
   removeSwipeListener()
   document.removeEventListener("keydown", omKeyDown)
 })
 </script>
-<style lang="scss">
-:root {
-  font-size: 14px;
-  @media (min-width: 768px) {
-    font-size: 16px;
-  }
-}
-</style>

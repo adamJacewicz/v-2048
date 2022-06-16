@@ -6,8 +6,9 @@
         :key="_"
         v-for="_ in blankTiles"
       />
-
-      <Tile :tile="tile" :key="tile.id" v-for="tile in tiles" />
+      <template :key="tile.id" v-for="tile in gameStore.tiles">
+        <Tile  :tile="tile"  />
+      </template>
     </div>
   </div>
 </template>
@@ -19,5 +20,5 @@ import { DEFAULT_ROWS } from "../utils"
 import { storeToRefs } from "pinia"
 
 const blankTiles = DEFAULT_ROWS * DEFAULT_ROWS
-const { tiles } = storeToRefs(useGameStore())
+const gameStore = useGameStore()
 </script>
