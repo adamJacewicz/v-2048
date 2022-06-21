@@ -1,5 +1,6 @@
 import { v4 as uuidv4 } from "uuid"
-import { Axis, Tile } from "./stores/game"
+import { AxisType, Tile } from "./stores/game.types"
+import { Axis } from "./constants"
 
 export const DEFAULT_ROWS = 4
 
@@ -16,12 +17,17 @@ export const createTile = (x: number, y: number, value: number): Tile => ({
 
 export const splitIntoRows = (
   tiles: Array<Tile>,
-  axis: Axis
-): Array<Array<Tile>> =>
-  tiles.reduce<Array<Array<Tile>>>(
-    (acc, tile) => {
-      acc[tile[axis]].push(tile)
-      return acc
-    },
-    [[], [], [], []]
-  )
+  axis: AxisType
+): Array<Array<Tile>> => {
+  const constAxis = axis === Axis.X ? Axis.Y : Axis.X
+
+  return tiles
+    .reduce<Array<Array<Tile>>>(
+      (acc, tile) => {
+        !tile.merged && acc[tile[axis]].push(tile)
+        return acc
+      },
+      [[], [], [], []]
+    )
+    .map((row) => row.sort((a, b) => a[constAxis] - b[constAxis]))
+}

@@ -19,7 +19,7 @@
 import Board from "./components/Board.vue"
 import Stats from "./components/Stats.vue"
 import Header from "./components/Header.vue"
-import { capitalize, onBeforeMount, onBeforeUnmount } from "vue"
+import { onBeforeMount, onBeforeUnmount } from "vue"
 import { useGameStore } from "./stores/game"
 import { SwipeDirection, useSwipe } from "@vueuse/core"
 import { directionParameters, DirectionType } from "./constants"
@@ -31,17 +31,20 @@ const onSwipeEnd = (e: TouchEvent, direction: SwipeDirection): void =>
 const onKeyDown = ({ key }: KeyboardEvent): void =>
   moveHandler(key.replace(/arrow/i, ""))
 
-const moveHandler = (dir: string): void => {
-  const direction = capitalize(dir) as DirectionType
-  if (direction in directionParameters) {
-    const { axis, desc } = directionParameters[direction]
+const moveHandler = (direction: string): void => {
+  const parsedDirection = direction.toUpperCase() as Uppercase<DirectionType>
+  if (parsedDirection in directionParameters) {
+    const { axis, desc } = directionParameters[parsedDirection]
     gameStore.move(axis, desc)
   }
 }
 const { stop: removeSwipeListener } = useSwipe(document, {
   onSwipeEnd,
 })
-onBeforeMount(() => document.addEventListener("keydown", onKeyDown))
+
+onBeforeMount(() => {
+  document.addEventListener("keydown", onKeyDown)
+})
 
 onBeforeUnmount(() => {
   removeSwipeListener()

@@ -3,7 +3,7 @@
     v-show="!tile.merged"
     :style="tilePosition"
     :class="{ 'new-tile': tile.value === 2 }"
-    class="tile absolute m-1.5 h-[calc(25%-0.75rem)] w-[calc(25%-0.75rem)] origin-center text-5xl font-bold text-gray-600 transition-transform duration-200"
+    class="absolute m-1.5 h-[calc(25%-0.75rem)] w-[calc(25%-0.75rem)] origin-center text-5xl font-bold text-gray-600 transition-transform duration-200"
   >
     <div
       class="inner flex h-full w-full items-center justify-center rounded-md transition-transform duration-200"
@@ -14,7 +14,7 @@
   </div>
 </template>
 <script setup lang="ts">
-import { Tile } from "../stores/game"
+import { Tile } from "../stores/game.types"
 import { computed } from "vue"
 const props = defineProps<{ tile: Tile }>()
 
@@ -26,7 +26,7 @@ const tilePosition = computed(() => {
   }
 })
 
-const bgClass: any = {
+const bgClass: Record<number, string> = {
   2: "bg-tile-2",
   4: "bg-tile-4",
   8: "bg-tile-8",

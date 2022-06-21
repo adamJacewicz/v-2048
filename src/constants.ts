@@ -1,13 +1,18 @@
-import { Axis } from "./stores/game"
+import { AxisType } from "./stores/game.types"
+
+export const Axis: Record<Uppercase<AxisType>, AxisType> = {
+  X: "x",
+  Y: "y",
+} as const
 
 export type DirectionType = "Up" | "Down" | "Left" | "Right"
 
 export const directionParameters: Record<
-  DirectionType,
-  { axis: Axis; desc: boolean }
+  Uppercase<DirectionType>,
+  { axis: typeof Axis[keyof typeof Axis]; desc: boolean }
 > = {
-  Up: { axis: Axis.Y, desc: false },
-  Down: { axis: Axis.Y, desc: true },
-  Left: { axis: Axis.X, desc: false },
-  Right: { axis: Axis.X, desc: true },
+  UP: { axis: Axis.Y, desc: false },
+  DOWN: { axis: Axis.Y, desc: true },
+  LEFT: { axis: Axis.X, desc: false },
+  RIGHT: { axis: Axis.X, desc: true },
 }

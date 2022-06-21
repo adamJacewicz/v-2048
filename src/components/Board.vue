@@ -28,23 +28,20 @@ const blankTiles = DEFAULT_ROWS * DEFAULT_ROWS
 <style lang="scss" scoped>
 .scale-enter-active,
 .scale-leave-active {
-  :deep {
-    .inner {
-      transform: scale(1.2);
-    }
-    &.new-tile .inner {
-      transition-delay: 50ms;
-      transform: scale(1);
-    }
+  :deep(.inner) {
+    transform: scale(1.2);
+  }
+  &:deep(.new-tile .inner) {
+    transition-delay: 50ms;
+    transform: scale(1);
   }
 }
 .scale-enter-from,
 .scale-leave-to {
-  :deep {
-    .inner,
-    &.new-tile .inner {
-      transform: scale(0);
-    }
+  :deep(.inner),
+  &:deep(.new-tile .inner) {
+    transition-delay: 100ms;
+    transform: scale(0);
   }
 }
 </style>

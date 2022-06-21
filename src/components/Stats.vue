@@ -7,7 +7,9 @@
         class="ml-2 max-w-[100px] flex-1 rounded-md border-0 bg-brown-400 py-2 px-4 text-center"
       >
         <div>{{ stat.label }}</div>
-        <div class="text-2xl leading-6">{{ stat.value }}</div>
+        <div :data-testid="`${stat.label}-value`" class="text-2xl leading-6">
+          {{ stat.value }}
+        </div>
       </div>
     </div>
     <button
@@ -23,11 +25,10 @@ import { useGameStore } from "../stores/game"
 import { computed } from "vue"
 import { storeToRefs } from "pinia"
 const gameStore = useGameStore()
-
 const { score, best } = storeToRefs(gameStore)
 
 const stats = computed(() => [
-  { value: score, label: "Score" },
-  { value: best, label: "Best" },
+  { value: score, label: "score" },
+  { value: best, label: "best" },
 ])
 </script>

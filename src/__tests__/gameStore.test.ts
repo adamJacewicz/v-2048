@@ -1,6 +1,9 @@
 import { setActivePinia, createPinia } from "pinia"
 import { useGameStore } from "../stores/game"
 import { expect } from "vitest"
+import App from "../App.vue"
+import Stats from "../components/Stats.vue"
+import { mount } from "@vue/test-utils"
 
 describe("Game store", () => {
   beforeEach(() => {

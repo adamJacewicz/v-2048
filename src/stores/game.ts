@@ -5,27 +5,8 @@ import {
   splitIntoRows,
 } from "../utils"
 import { defineStore, acceptHMRUpdate } from "pinia"
-
-export type Tile = {
-  x: number
-  y: number
-  value: number
-  merged: boolean
-  id: string
-}
-
-type GameState = {
-  tiles: Array<Tile>
-  score: number
-  best: number
-}
-
-export type Axis = "x" | "y"
-
-export const Axis: Record<"X" | "Y", Axis> = {
-  X: "x",
-  Y: "y",
-}
+import { AxisType, GameState, Tile } from "./game.types"
+import { Axis } from "../constants"
 
 export const useGameStore = defineStore("game", {
   state: (): GameState => ({
@@ -49,7 +30,7 @@ export const useGameStore = defineStore("game", {
     removeMergedTiles(): void {
       this.tiles = this.tiles.filter((tile) => !tile.merged)
     },
-    move(axis: Axis, desc = false): void {
+    move(axis: AxisType, desc = false): void {
       this.removeMergedTiles()
       let updated = false
       const constAxis = axis === Axis.X ? Axis.Y : Axis.X
@@ -74,6 +55,7 @@ export const useGameStore = defineStore("game", {
           })
       )
       updated && this.addTile()
+
     },
     addTile(x?: number, y?: number, value: number = 2): void {
       const randomPosition =
@@ -90,6 +72,17 @@ export const useGameStore = defineStore("game", {
     },
   },
   getters: {
+    mergePossible(): boolean {
+      const tiles = JSON.parse(JSON.stringify(this.tiles))
+      return [
+        ...splitIntoRows(tiles, Axis.X),
+        ...splitIntoRows(tiles, Axis.Y),
+      ].some((row) =>
+        row.some((tile, i) =>
+          i === 0 ? false : tile.value === row[i - 1].value
+        )
+      )
+    },
     availablePositions(state) {
       const result = []
       for (let x = 0; x < DEFAULT_ROWS; x++) {
