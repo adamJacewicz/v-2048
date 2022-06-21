@@ -1,4 +1,9 @@
-import { createTile, DEFAULT_ROWS, getRandomInteger } from "../utils"
+import {
+  createTile,
+  DEFAULT_ROWS,
+  getRandomInteger,
+  splitIntoRows,
+} from "../utils"
 import { defineStore, acceptHMRUpdate } from "pinia"
 
 export type Tile = {
@@ -23,17 +28,16 @@ export const Axis: Record<"X" | "Y", Axis> = {
 }
 
 export const useGameStore = defineStore("game", {
-  state: (): GameState => {
-    return {
-      tiles: [],
-      score: 0,
-      best: 0,
-    }
-  },
+  state: (): GameState => ({
+    tiles: [],
+    score: 0,
+    best: 0,
+  }),
   actions: {
     init(): void {
       this.tiles = []
       this.score = 0
+      this.addTile()
       this.addTile()
     },
     updateScore(value: number): void {
@@ -46,45 +50,43 @@ export const useGameStore = defineStore("game", {
       this.tiles = this.tiles.filter((tile) => !tile.merged)
     },
     move(axis: Axis, desc = false): void {
-      const constAxis = axis === Axis.X ? Axis.Y : Axis.X
       this.removeMergedTiles()
-      const result: Array<Tile> = JSON.parse(JSON.stringify(this.tiles))
-      result
-        .reduce<Array<Array<Tile>>>(
-          (acc, tile) => {
-            acc[tile[constAxis]].push(tile)
-            return acc
-          },
-          [[], [], [], []]
-        )
-        .forEach((row) => {
-          row
-            .sort((a, b) => (desc ? b[axis] - a[axis] : a[axis] - b[axis]))
-            .forEach((tile, i) => {
-              const last = row[i - 1]
-              if (i === 0) {
-                tile[axis] = desc ? DEFAULT_ROWS - i - 1 : i
-              } else if (!last.merged && last.value === tile.value) {
-                this.updateScore(last.value * 2)
-                result.push(createTile(last.x, last.y, last.value * 2))
-                last.merged = true
-                tile[axis] = last[axis]
-                tile.merged = true
-              } else {
-                tile[axis] = last[axis] + (desc ? -1 : 1)
-              }
-            })
-        })
-      this.tiles = result
+      let updated = false
+      const constAxis = axis === Axis.X ? Axis.Y : Axis.X
+
+      splitIntoRows(this.tiles, constAxis).forEach((row) =>
+        row
+          .sort((a, b) => (desc ? b[axis] - a[axis] : a[axis] - b[axis]))
+          .forEach((tile, i) => {
+            const position = tile[axis]
+            const last = row[i - 1]
+            if (i === 0) {
+              tile[axis] = desc ? DEFAULT_ROWS - i - 1 : i
+            } else if (!last.merged && last.value === tile.value) {
+              last.merged = true
+              tile.merged = true
+              tile[axis] = last[axis]
+              this.addTile(last.x, last.y, last.value * 2)
+            } else {
+              tile[axis] = last[axis] + (desc ? -1 : 1)
+            }
+            if (tile[axis] !== position) updated = true
+          })
+      )
+      updated && this.addTile()
     },
     addTile(x?: number, y?: number, value: number = 2): void {
       const randomPosition =
         this.availablePositions[
           getRandomInteger(0, this.availablePositions.length - 1)
         ]
-      this.tiles.push(
-        createTile(x ?? randomPosition.x, y ?? randomPosition.y, value)
+      const newTile = createTile(
+        x ?? randomPosition.x,
+        y ?? randomPosition.y,
+        value
       )
+      this.tiles.push(newTile)
+      value > 2 && this.updateScore(value)
     },
   },
   getters: {

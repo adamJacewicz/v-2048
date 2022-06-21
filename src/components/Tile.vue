@@ -1,11 +1,12 @@
 <template>
   <div
+    v-show="!tile.merged"
     :style="tilePosition"
-    :class="[tile.value === 2 && 'new-tile']"
-    class="tile duration-200 absolute m-1.5 flex h-[calc(25%-0.75rem)] w-[calc(25%-0.75rem)] origin-center text-5xl font-bold text-gray-600 transition-transform"
+    :class="{ 'new-tile': tile.value === 2 }"
+    class="tile absolute m-1.5 h-[calc(25%-0.75rem)] w-[calc(25%-0.75rem)] origin-center text-5xl font-bold text-gray-600 transition-transform duration-200"
   >
     <div
-      class="inner duration-200 flex flex-1 items-center justify-center rounded-md transition-transform"
+      class="inner flex h-full w-full items-center justify-center rounded-md transition-transform duration-200"
       :class="bgClass[tile.value]"
     >
       {{ tile.value }}
@@ -15,7 +16,6 @@
 <script setup lang="ts">
 import { Tile } from "../stores/game"
 import { computed } from "vue"
-
 const props = defineProps<{ tile: Tile }>()
 
 const tilePosition = computed(() => {
@@ -40,33 +40,3 @@ const bgClass: any = {
   2048: "bg-tile-2048",
 }
 </script>
-<style lang="scss" scoped>
-@mixin scale {
-  @keyframes scale {
-    0% {
-      transform: scale(0);
-    }
-    100% {
-      transform: scale(1);
-    }
-  }
-}
-
-@include scale;
-
-@keyframes overscale {
-  @include scale;
-  50% {
-    transform: scale(1.2);
-  }
-}
-
-.tile {
-  .inner {
-    animation: overscale 200ms;
-  }
-  &.new-tile .inner {
-    animation: scale 200ms;
-  }
-}
-</style>

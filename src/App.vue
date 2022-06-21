@@ -1,65 +1,50 @@
 <template>
   <div class="flex h-full max-h-full flex-col bg-brown-200">
     <div class="m-auto w-[max(280px,70%)] max-w-[500px]">
-      <div class="grid grid-cols-2 grid-rows-2">
-        <Header class="row-span-2" />
-        <Score class="self-center" />
-        <button
-          @click="gameStore.init"
-          class="mt-auto ml-auto rounded-md border bg-brown-600 py-2 px-4 text-lg font-medium text-gray-100"
-        >
-          New game
-        </button>
+      <div class="flex">
+        <Header class="flex-1" />
+        <Stats class="flex-1" />
       </div>
-      <Board class="mt-8" />
+      <Board class="my-5" />
+      <section class="text-lg text-gray-600">
+        <span class="font-bold">HOW TO PLAY:</span> Use your
+        <span class="font-bold">arrow keys</span> to move the tiles. When two
+        tiles with the same number touch, they
+        <span class="font-bold">merge into one!</span>
+      </section>
     </div>
   </div>
 </template>
 <script setup lang="ts">
 import Board from "./components/Board.vue"
-import Score from "./components/Score.vue"
+import Stats from "./components/Stats.vue"
 import Header from "./components/Header.vue"
-import { onBeforeMount, onBeforeUnmount, watch } from "vue"
-import { Axis, useGameStore } from "./stores/game"
+import { capitalize, onBeforeMount, onBeforeUnmount } from "vue"
+import { useGameStore } from "./stores/game"
 import { SwipeDirection, useSwipe } from "@vueuse/core"
+import { directionParameters, DirectionType } from "./constants"
 const gameStore = useGameStore()
 
-watch(
-  () => gameStore.tiles,
-  (curr, prev) => {
-    JSON.stringify(curr) !== JSON.stringify(prev) && gameStore.addTile()
-  },
-  {
-    flush: "post",
-  }
-)
-
-const moveParams: Record<string, { axis: Axis; desc: boolean }> = {
-  UP: { axis: Axis.Y, desc: false },
-  DOWN: { axis: Axis.Y, desc: true },
-  LEFT: { axis: Axis.X, desc: false },
-  RIGHT: { axis: Axis.X, desc: true },
-}
-
-const onSwipeEnd = (e: TouchEvent, direction: SwipeDirection) =>
+const onSwipeEnd = (e: TouchEvent, direction: SwipeDirection): void =>
   moveHandler(direction)
 
-const omKeyDown = (e: KeyboardEvent) =>
-  moveHandler(e.key.toUpperCase().replace("ARROW", ""))
+const onKeyDown = ({ key }: KeyboardEvent): void =>
+  moveHandler(key.replace(/arrow/i, ""))
 
-const moveHandler = (direction: string): void => {
-  if (moveParams.hasOwnProperty(direction)) {
-    const { axis, desc } = moveParams[direction]
+const moveHandler = (dir: string): void => {
+  const direction = capitalize(dir) as DirectionType
+  if (direction in directionParameters) {
+    const { axis, desc } = directionParameters[direction]
     gameStore.move(axis, desc)
   }
 }
 const { stop: removeSwipeListener } = useSwipe(document, {
   onSwipeEnd,
 })
+onBeforeMount(() => document.addEventListener("keydown", onKeyDown))
 
-onBeforeMount(() => document.addEventListener("keydown", omKeyDown))
 onBeforeUnmount(() => {
   removeSwipeListener()
-  document.removeEventListener("keydown", omKeyDown)
+  document.removeEventListener("keydown", onKeyDown)
 })
 </script>
