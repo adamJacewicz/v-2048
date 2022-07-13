@@ -1,5 +1,5 @@
 <template>
-  <div class="flex h-full max-h-full flex-col bg-brown-200">
+  <div class="flex h-[100vh] max-h-full flex-col bg-brown-200">
     <div class="m-auto w-[max(280px,70%)] max-w-[500px]">
       <div class="flex">
         <Header class="flex-1" />
