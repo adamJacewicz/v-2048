@@ -1,5 +1,10 @@
 module.exports = {
   content: ["./src/**/*.{vue,js,ts,jsx,tsx}"],
+  safelist: [
+    {
+      pattern: /^bg-tile-\d/,
+    }
+  ],
   theme: {
     fontFamily: {
       sans: ["Open Sans", "sans-serif"],

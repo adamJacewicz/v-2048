@@ -1,8 +1,8 @@
 import {
   createTile,
-  DEFAULT_ROWS,
+  BOARD_SIZE,
   getRandomInteger,
-  splitIntoRows,
+  sortAndGroup,
 } from "../utils"
 import { defineStore, acceptHMRUpdate } from "pinia"
 import { AxisType, GameState, Tile } from "./game.types"
@@ -33,35 +33,28 @@ export const useGameStore = defineStore("game", {
     move(axis: AxisType, desc = false): void {
       this.removeMergedTiles()
       let updated = false
-      const constAxis = axis === Axis.X ? Axis.Y : Axis.X
-
-      splitIntoRows(this.tiles, constAxis).forEach((row) =>
-        row
-          .sort((a, b) => (desc ? b[axis] - a[axis] : a[axis] - b[axis]))
-          .forEach((tile, i) => {
-            const position = tile[axis]
-            const last = row[i - 1]
-            if (i === 0) {
-              tile[axis] = desc ? DEFAULT_ROWS - i - 1 : i
-            } else if (!last.merged && last.value === tile.value) {
-              last.merged = true
-              tile.merged = true
-              tile[axis] = last[axis]
-              this.addTile(last.x, last.y, last.value * 2)
-            } else {
-              tile[axis] = last[axis] + (desc ? -1 : 1)
-            }
-            if (tile[axis] !== position) updated = true
-          })
+      sortAndGroup(this.tiles, axis, desc).forEach((row) =>
+        row.forEach((tile, i) => {
+          const position = tile[axis]
+          const last = row[i - 1]
+          if (i === 0) {
+            tile[axis] = desc ? BOARD_SIZE - i - 1 : i
+          } else if (!last.merged && last.value === tile.value) {
+            last.merged = true
+            tile.merged = true
+            tile[axis] = last[axis]
+            this.addTile(last.x, last.y, last.value * 2)
+          } else {
+            tile[axis] = last[axis] + (desc ? -1 : 1)
+          }
+          if (tile[axis] !== position) updated = true
+        })
       )
       updated && this.addTile()
-
     },
     addTile(x?: number, y?: number, value: number = 2): void {
-      const randomPosition =
-        this.availablePositions[
-          getRandomInteger(0, this.availablePositions.length - 1)
-        ]
+      const index = getRandomInteger(0, this.availablePositions.length - 1)
+      const randomPosition = this.availablePositions[index]
       const newTile = createTile(
         x ?? randomPosition.x,
         y ?? randomPosition.y,
@@ -73,25 +66,24 @@ export const useGameStore = defineStore("game", {
   },
   getters: {
     mergePossible(): boolean {
-      const tiles = JSON.parse(JSON.stringify(this.tiles))
+      const tiles: Tile[] = JSON.parse(JSON.stringify(this.tiles))
       return [
-        ...splitIntoRows(tiles, Axis.X),
-        ...splitIntoRows(tiles, Axis.Y),
+        ...sortAndGroup(tiles, Axis.X),
+        ...sortAndGroup(tiles, Axis.Y),
       ].some((row) =>
-        row.some((tile, i) =>
-          i === 0 ? false : tile.value === row[i - 1].value
-        )
+        row.some((tile, i, row) => i !== 0 && tile.value === row[i - 1].value)
       )
     },
-    availablePositions(state) {
-      const result = []
-      for (let x = 0; x < DEFAULT_ROWS; x++) {
-        for (let y = 0; y < DEFAULT_ROWS; y++) {
+    availablePositions(state): Record<AxisType, number>[] {
+      return Array(BOARD_SIZE * BOARD_SIZE)
+        .fill(0)
+        .reduce((res, item, index) => {
+          const y = Math.floor(index / BOARD_SIZE)
+          const x = index % BOARD_SIZE
           !state.tiles.some((tile: Tile) => tile.x === x && tile.y === y) &&
-            result.push({ x, y })
-        }
-      }
-      return result
+            res.push({ x, y })
+          return res
+        }, [])
     },
   },
   persist: true,

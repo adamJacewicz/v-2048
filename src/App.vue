@@ -44,6 +44,7 @@ const { stop: removeSwipeListener } = useSwipe(document, {
 
 onBeforeMount(() => {
   document.addEventListener("keydown", onKeyDown)
+  gameStore.tiles.length === 0 && gameStore.score === 0 && gameStore.init()
 })
 
 onBeforeUnmount(() => {
@@ -51,3 +52,8 @@ onBeforeUnmount(() => {
   document.removeEventListener("keydown", onKeyDown)
 })
 </script>
+<style lang="scss">
+body {
+  overscroll-behavior: contain;
+}
+</style>

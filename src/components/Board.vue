@@ -1,7 +1,14 @@
 <template>
   <div
-    class="relative flex aspect-[1/1] flex-wrap rounded-md bg-brown-400 p-1.5"
+    class="relative flex aspect-[1/1] flex-wrap overflow-hidden rounded-md bg-brown-400 p-1.5"
   >
+    <div
+      v-if="!movementPossible"
+      class="absolute top-0 left-0 right-0 bottom-0 z-10 flex items-center justify-center bg-black bg-opacity-60"
+    >
+      <h1 class="text-4xl text-gray-200">Game over!</h1>
+    </div>
+
     <div
       class="m-1.5 h-[calc(25%-0.75rem)] w-[calc(25%-0.75rem)] rounded-md bg-tile-blank"
       :key="_"
@@ -17,31 +24,33 @@
   </div>
 </template>
 <script setup lang="ts">
-import { DEFAULT_ROWS } from "../utils"
+import { BOARD_SIZE } from "../utils"
 import { useGameStore } from "../stores/game"
 import Tile from "./Tile.vue"
 import { storeToRefs } from "pinia"
+import { computed } from "vue"
 
-const { tiles } = storeToRefs(useGameStore())
-const blankTiles = DEFAULT_ROWS * DEFAULT_ROWS
+const { tiles, availablePositions, mergePossible } = storeToRefs(useGameStore())
+
+const movementPossible = computed(
+  () => !!availablePositions.value.length || mergePossible.value
+)
+
+const blankTiles = BOARD_SIZE * BOARD_SIZE
 </script>
 <style lang="scss" scoped>
-.scale-enter-active,
-.scale-leave-active {
-  :deep(.inner) {
-    transform: scale(1.2);
+.scale-enter-from {
+  &:deep(.inner) {
+    transform: scale(0);
   }
-  &:deep(.new-tile .inner) {
+}
+.scale-enter-to {
+  &.new-tile:deep(.inner) {
     transition-delay: 50ms;
     transform: scale(1);
   }
-}
-.scale-enter-from,
-.scale-leave-to {
-  :deep(.inner),
-  &:deep(.new-tile .inner) {
-    transition-delay: 100ms;
-    transform: scale(0);
+  &:not(.new-tile):deep(.inner) {
+    transform: scale(1.2);
   }
 }
 </style>
