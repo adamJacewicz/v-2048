@@ -3,7 +3,7 @@
     class="relative flex aspect-[1/1] flex-wrap overflow-hidden rounded-md bg-brown-400 p-1.5"
   >
     <div
-      v-if="!movementPossible"
+      v-if="!canMove"
       class="absolute top-0 left-0 right-0 bottom-0 z-10 flex items-center justify-center bg-black bg-opacity-60"
     >
       <h1 class="text-4xl text-gray-200">Game over!</h1>
@@ -30,10 +30,10 @@ import Tile from "./Tile.vue"
 import { storeToRefs } from "pinia"
 import { computed } from "vue"
 
-const { tiles, availablePositions, mergePossible } = storeToRefs(useGameStore())
+const { tiles, availablePositions, movementPossible } = storeToRefs(useGameStore())
 
-const movementPossible = computed(
-  () => !!availablePositions.value.length || mergePossible.value
+const canMove = computed(
+  () => !!availablePositions.value.length || movementPossible.value
 )
 
 const blankTiles = BOARD_SIZE * BOARD_SIZE

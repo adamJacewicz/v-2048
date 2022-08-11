@@ -1,5 +1,5 @@
 import { v4 as uuidv4 } from "uuid"
-import { AxisType, Tile } from "./stores/game.types"
+import { Tile } from "./stores/game.types"
 
 export const BOARD_SIZE = 4
 
@@ -7,7 +7,6 @@ export const getRandomInteger = (min: number, max: number): number =>
   Math.floor(Math.random() * (max - min + 1)) + min
 
 export const createTile = (tile: Pick<Tile, "x" | "y" | "value">): Tile => ({
-  ...tile,
   merged: false,
   id: uuidv4(),
   move(axis, value) {
@@ -19,10 +18,8 @@ export const createTile = (tile: Pick<Tile, "x" | "y" | "value">): Tile => ({
   update() {
     this.value *= 2
   },
+  ...tile,
 })
-
-export const sortByAxis = (array: Tile[], axis: AxisType, desc = false) =>
-  array.sort((a, b) => (desc ? b[axis] - a[axis] : a[axis] - b[axis]))
 
 export const generateArray = <T, R = T | (() => T)>(
   length: number = BOARD_SIZE

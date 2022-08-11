@@ -1,4 +1,9 @@
-import { createTile, BOARD_SIZE, getRandomInteger, sortByAxis, generateArray } from "../utils"
+import {
+  createTile,
+  BOARD_SIZE,
+  getRandomInteger,
+  generateArray,
+} from "../utils"
 import { defineStore, acceptHMRUpdate } from "pinia"
 import { AxisType, GameState, Tile } from "./game.types"
 
@@ -74,20 +79,21 @@ export const useGameStore = defineStore("game", {
       })
       return { x: rows, y: cols }
     },
-    mergePossible(): boolean {
-      return Object.values(this.vectors).flat().some((row) =>
-        row.some((tile, i, row) => i !== 0 && tile.value === row[i - 1].value)
-      )
+    movementPossible(): boolean {
+      return Object.values(this.vectors)
+        .flat()
+        .some((row) =>
+          row.some((tile, i, row) => i !== 0 && tile.value === row[i - 1].value)
+        )
     },
-    availablePositions(state): Record<AxisType, number>[] {
+    availablePositions(): Record<AxisType, number>[] {
       return Array(BOARD_SIZE * BOARD_SIZE)
         .fill(0)
-        .reduce((res, item, index) => {
+        .reduce((res, _, index) => {
           const y = Math.floor(index / BOARD_SIZE)
           const x = index % BOARD_SIZE
-          !state.tiles.some((tile: Tile) => tile.x === x && tile.y === y) &&
-            res.push({ x, y })
-          return res
+          const exists = !!this.vectors.x[y]?.[x]
+          return exists ? res : [...res, { x, y }]
         }, [])
     },
   },
