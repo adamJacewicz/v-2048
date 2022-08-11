@@ -1,10 +1,10 @@
 <template>
-  <div class="flex flex-1 flex-col">
-    <div class="flex justify-end text-sm font-medium uppercase text-gray-100">
+  <div class="flex flex-col">
+    <div class="flex">
       <div
         v-for="item in stats"
         :key="item.label"
-        class="ml-2 max-w-[100px] flex-1 rounded-md border-0 bg-brown-400 py-2 px-4 text-center"
+        class="flex flex-1 flex-col rounded-md bg-brown-400 p-2 text-center text-gray-100 last-of-type:ml-2"
       >
         <div>{{ item.label }}</div>
         <div class="text-2xl leading-6">
@@ -14,7 +14,7 @@
     </div>
     <button
       @click="gameStore.init"
-      class="mt-auto ml-auto rounded-md border bg-brown-600 py-2 px-4 text-lg font-medium text-gray-100"
+      class="rounded-md mt-2 border bg-brown-600 p-2 text-sm text-gray-100 sm:text-lg"
     >
       New game
     </button>

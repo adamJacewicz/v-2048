@@ -38,19 +38,3 @@ const movementPossible = computed(
 
 const blankTiles = BOARD_SIZE * BOARD_SIZE
 </script>
-<style lang="scss" scoped>
-.scale-enter-from {
-  &:deep(.inner) {
-    transform: scale(0);
-  }
-}
-.scale-enter-to {
-  &.new-tile:deep(.inner) {
-    transition-delay: 50ms;
-    transform: scale(1);
-  }
-  &:not(.new-tile):deep(.inner) {
-    transform: scale(1.2);
-  }
-}
-</style>
