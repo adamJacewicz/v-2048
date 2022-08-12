@@ -22,22 +22,23 @@ import Header from "./components/Header.vue"
 import { onBeforeMount, onBeforeUnmount } from "vue"
 import { useGameStore } from "./stores/game"
 import { SwipeDirection, useEventListener, useSwipe } from "@vueuse/core"
-import { directionParameters, DirectionType } from "./constants"
+import { movementOptions } from "./constants"
+import { DirectionType } from "./stores/game.types"
 
 const gameStore = useGameStore()
 
-const onSwipeEnd = (e: TouchEvent, direction: SwipeDirection): void =>
-  moveHandler(direction)
+const onSwipeEnd = (e: TouchEvent, direction: SwipeDirection): void => {
+  const directionKey = Object.keys(movementOptions).find((key) =>
+    key.toUpperCase().includes(direction)
+  ) as DirectionType
 
-const onKeyDown = ({ key }: KeyboardEvent): void =>
-  moveHandler(key.replace(/arrow/i, ""))
+  const { axis, order } = movementOptions[directionKey]
+  gameStore.move(axis, order)
+}
 
-const moveHandler = (direction: string): void => {
-  const parsedDirection = direction.toUpperCase() as Uppercase<DirectionType>
-  if (parsedDirection in directionParameters) {
-    const { axis, desc } = directionParameters[parsedDirection]
-    gameStore.move(axis, desc)
-  }
+const onKeyDown = ({ key }: KeyboardEvent): void => {
+  const { axis, order } = movementOptions[key as DirectionType]
+  gameStore.move(axis, order)
 }
 const { stop: removeSwipeListener } = useSwipe(document, {
   onSwipeEnd,

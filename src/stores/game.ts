@@ -1,12 +1,12 @@
 import {
-  createTile,
   BOARD_SIZE,
+  createTile,
   getRandomInteger,
   sortAndGroup,
 } from "../utils"
-import { defineStore, acceptHMRUpdate } from "pinia"
+import { acceptHMRUpdate, defineStore } from "pinia"
 import { AxisType, GameState, Tile } from "./game.types"
-import { Axis } from "../constants"
+import { Axis, Order } from "../constants"
 
 export const useGameStore = defineStore("game", {
   state: (): GameState => ({
@@ -30,26 +30,27 @@ export const useGameStore = defineStore("game", {
     removeMergedTiles(): void {
       this.tiles = this.tiles.filter((tile) => !tile.merged)
     },
-    move(axis: AxisType, desc = false): void {
+    move(axis: AxisType, order: Order): void {
       this.removeMergedTiles()
       let updated = false
-      sortAndGroup(this.tiles, axis, desc).forEach((row) =>
-        row.forEach((tile, i) => {
+      this.vectors[axis].forEach((row) => {
+        order === Order.DESC && row.reverse()
+        row.reduce<Tile | null>((last, tile, i) => {
           const position = tile[axis]
-          const last = row[i - 1]
-          if (i === 0) {
-            tile.move(axis, desc ? BOARD_SIZE - i - 1 : i)
-          } else if (!last.merged && last.value === tile.value) {
+          if (!last) {
+            tile.move(axis, order === Order.DESC ? BOARD_SIZE - i - 1 : i)
+          } else if (!!last && !last.merged && last.value === tile.value) {
             tile.merge()
             tile.move(axis, last[axis])
             last.update()
             this.updateScore(last.value)
           } else {
-            tile.move(axis, last[axis] + (desc ? -1 : 1))
+            tile.move(axis, last[axis] + order)
           }
           if (tile[axis] !== position) updated = true
-        })
-      )
+          return tile
+        }, null)
+      })
       updated && this.addTile()
     },
     addTile(tile?: Pick<Tile, "x" | "y" | "value">): void {
@@ -61,12 +62,14 @@ export const useGameStore = defineStore("game", {
     },
   },
   getters: {
+    vectors(): Record<AxisType, Tile[][]> {
+      return {
+        x: sortAndGroup(this.tiles, Axis.X, Axis.Y, Order.ASC),
+        y: sortAndGroup(this.tiles, Axis.Y, Axis.X, Order.ASC),
+      }
+    },
     mergePossible(): boolean {
-      const tiles: Tile[] = JSON.parse(JSON.stringify(this.tiles))
-      return [
-        ...sortAndGroup(tiles, Axis.X),
-        ...sortAndGroup(tiles, Axis.Y),
-      ].some((row) =>
+      return [...this.vectors.x, ...this.vectors.y].some((row) =>
         row.some((tile, i, row) => i !== 0 && tile.value === row[i - 1].value)
       )
     },

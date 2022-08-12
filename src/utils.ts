@@ -1,6 +1,6 @@
 import { v4 as uuidv4 } from "uuid"
-import { AxisType, Tile } from "./stores/game.types"
-import { Axis } from "./constants"
+import {  Tile } from "./stores/game.types"
+import { Order } from "./constants"
 
 export const BOARD_SIZE = 4
 
@@ -22,31 +22,30 @@ export const createTile = (tile: Pick<Tile, "x" | "y" | "value">): Tile => ({
   },
 })
 
-export const generateArray = <T, R = T | (() => T)>(
-  length: number = BOARD_SIZE
-): Array<T> => [...Array(length)]
 
+const sortBy = <T extends Record<PropertyKey, any>>(
+  array: T[],
+  key: keyof T,
+  order: Order
+): T[] => array.sort((a: T, b: T) => order * (a[key] - b[key]))
 
-const sortByAxis = (array: Tile[], axis: AxisType, desc = false) =>
-  array.sort((a, b) => (desc ? b[axis] - a[axis] : a[axis] - b[axis]))
+const groupBy = <T extends Record<PropertyKey, any>>(
+  array: T[],
+  key: keyof T
+): Record<T[keyof T], T[]> =>
+  array.reduce((result, item) => {
+    const value = item[key]
+    result[value] ||= []
+    result[value].push(item)
+    return result
+  }, {} as Record<T[keyof T], T[]>)
 
-const groupByAxis = (array: Tile[], axis: AxisType) =>
-  array.reduce<Record<number, Tile[]>>(
-    (result, item) => {
-      const propValue = item[axis]
-      result[propValue] = result[propValue] ?? []
-      result[propValue].push(item)
-      return result
-    },
-    [...Array(BOARD_SIZE)].map(() => [])
+export const sortAndGroup = <T>(
+  tiles: T[],
+  sortKey: keyof T,
+  groupKey: keyof T,
+  order: Order
+) =>
+  Object.values<T[]>(groupBy(tiles, groupKey)).map((row) =>
+    sortBy(row, sortKey, order)
   )
-
-export const sortAndGroup = (
-  tiles: Array<Tile>,
-  axis: AxisType,
-  desc = false
-) => {
-  return Object.values(
-    groupByAxis(tiles, axis === Axis.X ? Axis.Y : Axis.X)
-  ).map((row) => sortByAxis(row, axis, desc))
-}

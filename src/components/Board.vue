@@ -14,13 +14,9 @@
       :key="_"
       v-for="_ in blankTiles"
     />
-    <transition-group
-      tag="div"
-      name="scale"
-      class="absolute left-0 top-0 right-0 bottom-0 m-1.5 flex flex-wrap"
-    >
+    <div class="absolute left-0 top-0 right-0 bottom-0 m-1.5">
       <Tile :tile="tile" :key="tile.id" v-for="tile in tiles" />
-    </transition-group>
+    </div>
   </div>
 </template>
 <script setup lang="ts">
@@ -30,10 +26,10 @@ import Tile from "./Tile.vue"
 import { storeToRefs } from "pinia"
 import { computed } from "vue"
 
-const { tiles, availablePositions, movementPossible } = storeToRefs(useGameStore())
+const { tiles, availablePositions, mergePossible } = storeToRefs(useGameStore())
 
 const canMove = computed(
-  () => !!availablePositions.value.length || movementPossible.value
+  () => !!availablePositions.value.length && mergePossible
 )
 
 const blankTiles = BOARD_SIZE * BOARD_SIZE

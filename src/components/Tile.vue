@@ -1,12 +1,11 @@
 <template>
   <div
-    v-show="!tile.merged"
     :style="tilePosition"
-    class="tile absolute m-1.5 h-[calc(25%-0.75rem)] w-[calc(25%-0.75rem)] text-4xl font-bold text-gray-600 duration-[200ms] sm:text-5xl"
+    class="tile absolute m-1.5 h-[calc(25%-0.75rem)] w-[calc(25%-0.75rem)] text-4xl font-bold text-gray-600 duration-200 sm:text-5xl"
   >
     <div
       ref="tileInner"
-      class="inner flex h-full w-full items-center justify-center rounded-md duration-[000ms]"
+      class="inner flex h-full w-full items-center justify-center rounded-md"
       :class="`bg-tile-${tile.value}`"
     >
       {{ tile.value }}
@@ -59,6 +58,11 @@ const tilePosition = computed(() => {
 
 .tile .inner {
   animation: Scale 200ms both;
-  animation-delay: 100ms;
+  animation-delay: 50ms;
 }
+//
+//.merged .inner {
+//  animation: Scale 200ms backwards;
+//  animation-delay: 50ms;
+//}
 </style>
