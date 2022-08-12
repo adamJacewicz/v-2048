@@ -1,9 +1,9 @@
 <template>
-  <div class="flex h-[100vh] max-h-full  bg-brown-200">
-    <div class="m-auto w-[max(280px,80%)] max-w-[500px]">
-      <div class="flex gap-1">
-        <Header class="flex-[60%]" />
-        <Stats class="flex-[40%]" />
+  <div class="flex h-[100vh] max-h-full flex-col bg-brown-200">
+    <div class="m-auto w-[max(280px,70%)] max-w-[500px]">
+      <div class="flex">
+        <Header class="flex-1" />
+        <Stats class="flex-1" />
       </div>
       <Board class="my-5" />
       <section class="text-lg text-gray-600">
@@ -19,9 +19,9 @@
 import Board from "./components/Board.vue"
 import Stats from "./components/Stats.vue"
 import Header from "./components/Header.vue"
-import { onBeforeMount, onBeforeUnmount, ref } from "vue"
+import { onBeforeMount, onBeforeUnmount } from "vue"
 import { useGameStore } from "./stores/game"
-import { SwipeDirection, useSwipe, useEventListener } from "@vueuse/core"
+import { SwipeDirection, useEventListener, useSwipe } from "@vueuse/core"
 import { directionParameters, DirectionType } from "./constants"
 
 const gameStore = useGameStore()
@@ -43,7 +43,6 @@ const { stop: removeSwipeListener } = useSwipe(document, {
   onSwipeEnd,
 })
 
-
 useEventListener("keydown", onKeyDown)
 onBeforeMount(() => {
   gameStore.tiles.length === 0 && gameStore.score === 0 && gameStore.init()
@@ -54,6 +53,7 @@ onBeforeUnmount(removeSwipeListener)
 body {
   overscroll-behavior: contain;
 }
+
 html {
   font-size: clamp(14px, 3vw, 16px);
 }

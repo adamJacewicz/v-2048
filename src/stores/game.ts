@@ -2,10 +2,11 @@ import {
   createTile,
   BOARD_SIZE,
   getRandomInteger,
-  generateArray,
+  sortAndGroup,
 } from "../utils"
 import { defineStore, acceptHMRUpdate } from "pinia"
 import { AxisType, GameState, Tile } from "./game.types"
+import { Axis } from "../constants"
 
 export const useGameStore = defineStore("game", {
   state: (): GameState => ({
@@ -32,24 +33,23 @@ export const useGameStore = defineStore("game", {
     move(axis: AxisType, desc = false): void {
       this.removeMergedTiles()
       let updated = false
-      this.vectors[axis].forEach((vector) => {
-        !desc && vector.reverse()
-        vector.forEach((tile, i) => {
+      sortAndGroup(this.tiles, axis, desc).forEach((row) =>
+        row.forEach((tile, i) => {
           const position = tile[axis]
-          const last = vector[i - 1]
+          const last = row[i - 1]
           if (i === 0) {
             tile.move(axis, desc ? BOARD_SIZE - i - 1 : i)
           } else if (!last.merged && last.value === tile.value) {
-            last.update()
-            this.updateScore(last.value)
             tile.merge()
             tile.move(axis, last[axis])
+            last.update()
+            this.updateScore(last.value)
           } else {
             tile.move(axis, last[axis] + (desc ? -1 : 1))
           }
           if (tile[axis] !== position) updated = true
         })
-      })
+      )
       updated && this.addTile()
     },
     addTile(tile?: Pick<Tile, "x" | "y" | "value">): void {
@@ -61,39 +61,24 @@ export const useGameStore = defineStore("game", {
     },
   },
   getters: {
-    vectors(): Record<AxisType, Tile[][]> {
-      const rows = generateArray<Tile[]>(BOARD_SIZE).map((_) => [...Array(0)])
-      const cols = generateArray<Tile[]>(BOARD_SIZE).map((_) => [...Array(0)])
-      this.tiles.forEach((tile) => {
-        if (!tile.merged) {
-          const xIndex = rows[tile.y].findIndex((t) => t.x < tile.x)
-          xIndex < 0
-            ? rows[tile.y].push(tile)
-            : rows[tile.y].splice(xIndex, 0, tile)
-
-          const yIndex = cols[tile.x].findIndex((t) => t.y < tile.y)
-          yIndex < 0
-            ? cols[tile.x].push(tile)
-            : cols[tile.x].splice(yIndex, 0, tile)
-        }
-      })
-      return { x: rows, y: cols }
+    mergePossible(): boolean {
+      const tiles: Tile[] = JSON.parse(JSON.stringify(this.tiles))
+      return [
+        ...sortAndGroup(tiles, Axis.X),
+        ...sortAndGroup(tiles, Axis.Y),
+      ].some((row) =>
+        row.some((tile, i, row) => i !== 0 && tile.value === row[i - 1].value)
+      )
     },
-    movementPossible(): boolean {
-      return Object.values(this.vectors)
-        .flat()
-        .some((row) =>
-          row.some((tile, i, row) => i !== 0 && tile.value === row[i - 1].value)
-        )
-    },
-    availablePositions(): Record<AxisType, number>[] {
+    availablePositions(state): Record<AxisType, number>[] {
       return Array(BOARD_SIZE * BOARD_SIZE)
         .fill(0)
-        .reduce((res, _, index) => {
+        .reduce((res, item, index) => {
           const y = Math.floor(index / BOARD_SIZE)
           const x = index % BOARD_SIZE
-          const exists = !!this.vectors.x[y]?.[x]
-          return exists ? res : [...res, { x, y }]
+          !state.tiles.some((tile: Tile) => tile.x === x && tile.y === y) &&
+            res.push({ x, y })
+          return res
         }, [])
     },
   },
