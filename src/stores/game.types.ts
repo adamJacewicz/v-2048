@@ -5,7 +5,7 @@ export type Tile = {
   y: number
   value: number
   merged: boolean
-  id: string
+  id: number
   move(axis: AxisType, value: number): void
   update(): void
   merge(): void
@@ -16,7 +16,12 @@ export type GameState = {
   score: number
   best: number
 }
-export type MovementOptions = { axis: AxisType; order: Order }
 
-export type DirectionType = "ArrowUp" | "ArrowDown" | "ArrowLeft" | "ArrowRight"
+export type MovementOptions = {
+  sortBy: AxisType
+  order: Order
+  groupBy: AxisType
+}
+
+export type DirectionType = "up" | "down" | "left" | "right"
 export type AxisType = "x" | "y"

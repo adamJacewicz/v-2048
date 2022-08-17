@@ -13,7 +13,6 @@
       </div>
     </div>
     <button
-      @click="gameStore.init"
       class="rounded-md mt-2 border bg-brown-600 p-2 text-sm text-gray-100 sm:text-lg"
     >
       New game
@@ -21,11 +20,11 @@
   </div>
 </template>
 <script setup lang="ts">
-import { useGameStore } from "../stores/game"
+import { useGame } from "../stores/game"
 import { computed } from "vue"
 import { storeToRefs } from "pinia"
-const gameStore = useGameStore()
-const { score, best } = storeToRefs(gameStore)
+const game = useGame()
+const { score, best } = storeToRefs(game)
 
 const stats = computed(() => [
   { value: score, label: "score" },

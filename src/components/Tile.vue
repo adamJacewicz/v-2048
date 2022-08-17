@@ -16,12 +16,12 @@
 import { Tile } from "../stores/game.types"
 import { computed, ref, watch } from "vue"
 
-const { tile } = defineProps<{ tile: Tile }>()
+const props = defineProps<{ tile: Tile }>()
 
 const tileInner = ref()
 
 watch(
-  () => tile.value,
+  () => props.tile.value,
   () => {
     tileInner.value.animate(
       [
@@ -36,11 +36,10 @@ watch(
     )
   }
 )
-
 const tilePosition = computed(() => {
-  const { x, y } = tile
+  const { merged, x, y } = props.tile
   return {
-    zIndex: tile.merged ? 0 : 1,
+    zIndex: merged ? 0 : 1,
     transform: `translate(calc((100% + 0.75rem) * ${x}), calc((100% + 0.75rem) * ${y}))`,
   }
 })
@@ -57,12 +56,7 @@ const tilePosition = computed(() => {
 }
 
 .tile .inner {
-  animation: Scale 200ms both;
+  animation: Scale 200ms backwards;
   animation-delay: 50ms;
 }
-//
-//.merged .inner {
-//  animation: Scale 200ms backwards;
-//  animation-delay: 50ms;
-//}
 </style>

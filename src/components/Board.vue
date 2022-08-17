@@ -15,21 +15,23 @@
       v-for="_ in blankTiles"
     />
     <div class="absolute left-0 top-0 right-0 bottom-0 m-1.5">
-      <Tile :tile="tile" :key="tile.id" v-for="tile in tiles" />
+      <Tile :tile="tile" :key="tile.id" v-for="(tile, i) in ttt">
+        {{ tile.value }}
+      </Tile>
     </div>
   </div>
 </template>
 <script setup lang="ts">
 import { BOARD_SIZE } from "../utils"
-import { useGameStore } from "../stores/game"
+import { useGame } from "../stores/game"
 import Tile from "./Tile.vue"
-import { storeToRefs } from "pinia"
 import { computed } from "vue"
+const game = useGame()
 
-const { tiles, availablePositions, mergePossible } = storeToRefs(useGameStore())
+const ttt = computed(() => game.tiles)
 
 const canMove = computed(
-  () => !!availablePositions.value.length && mergePossible
+  () => !!game.availablePositions.length && game.mergePossible
 )
 
 const blankTiles = BOARD_SIZE * BOARD_SIZE

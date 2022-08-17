@@ -20,33 +20,25 @@ import Board from "./components/Board.vue"
 import Stats from "./components/Stats.vue"
 import Header from "./components/Header.vue"
 import { onBeforeMount, onBeforeUnmount } from "vue"
-import { useGameStore } from "./stores/game"
+import { useGame } from "./stores/game"
 import { SwipeDirection, useEventListener, useSwipe } from "@vueuse/core"
-import { movementOptions } from "./constants"
-import { DirectionType } from "./stores/game.types"
+import { getMovementOptions } from "./utils"
 
-const gameStore = useGameStore()
+const game = useGame()
+const { move, reset } = game
 
-const onSwipeEnd = (e: TouchEvent, direction: SwipeDirection): void => {
-  const directionKey = Object.keys(movementOptions).find((key) =>
-    key.toUpperCase().includes(direction)
-  ) as DirectionType
+const onSwipeEnd = (e: TouchEvent, direction: SwipeDirection): void =>
+  getMovementOptions(direction) && move(getMovementOptions(direction))
 
-  const { axis, order } = movementOptions[directionKey]
-  gameStore.move(axis, order)
-}
+const onKeyDown = ({ key }: KeyboardEvent): void =>
+  getMovementOptions(key) && move(getMovementOptions(key))
 
-const onKeyDown = ({ key }: KeyboardEvent): void => {
-  const { axis, order } = movementOptions[key as DirectionType]
-  gameStore.move(axis, order)
-}
 const { stop: removeSwipeListener } = useSwipe(document, {
   onSwipeEnd,
 })
-
 useEventListener("keydown", onKeyDown)
 onBeforeMount(() => {
-  gameStore.tiles.length === 0 && gameStore.score === 0 && gameStore.init()
+  game.tiles.length === 0 && game.score === 0 && reset()
 })
 onBeforeUnmount(removeSwipeListener)
 </script>
