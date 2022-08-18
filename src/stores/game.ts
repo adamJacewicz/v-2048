@@ -93,6 +93,8 @@ export const useGame = defineStore(
       score,
       best,
       gameOver,
+      updateScore,
+      addRandomTile,
       reset,
       move,
     }
