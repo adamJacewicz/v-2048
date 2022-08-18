@@ -2,13 +2,15 @@ import { AxisType, Tile } from "../stores/game.types"
 import { readonly, shallowRef } from "vue"
 import { v4 as useId } from "uuid"
 
-export const useTile = (pos: Record<AxisType, number>): Readonly<Tile> => {
+export const useTile = (
+  pos: Record<AxisType, number> & Partial<Tile>
+): Readonly<Tile> => {
   const tile = {
     x: shallowRef(pos.x),
     y: shallowRef(pos.y),
-    value: shallowRef(2),
-    merged: shallowRef(false),
-    id: useId(),
+    value: shallowRef(pos.value ?? 2),
+    merged: shallowRef(pos.merged ?? false),
+    id: pos.id ?? useId(),
   }
 
   const move = (axis: AxisType, value: number) => (tile[axis].value = value)

@@ -46,6 +46,7 @@ export const moveItems = (tiles: Tile[], axis: AxisType, order: Order) => {
       next.move(axis, curr[axis])
       curr.update()
       score += curr.value
+      moved = true
     } else if (next[axis] !== position) {
       moved = true
       next.move(axis, position)
