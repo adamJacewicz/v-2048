@@ -4,32 +4,9 @@ import {
   MovementOptions,
   Tile,
 } from "./stores/game.types"
-import { movementOptions, Order } from "./constants"
-
-export const deepClone = <T>(obj: any): T => {
-  if (obj === null) return null
-  let clone = { ...obj }
-  Object.keys(clone).forEach(
-    (key) =>
-      (clone[key] =
-        typeof obj[key] === "object" ? deepClone(obj[key]) : obj[key])
-  )
-  return Array.isArray(obj) && obj.length
-    ? (clone.length = obj.length) && Array.from(clone)
-    : Array.isArray(obj)
-    ? Array.from(obj)
-    : clone
-}
+import { Axis, movementOptions, Order } from "./constants"
 
 export const BOARD_SIZE = 4
-const useIndex = () => {
-  let index = 0
-  return {
-    get: () => index++,
-  }
-}
-
-const index = useIndex()
 
 export const initializeArrayWithRange = (end: number, start = 0, step = 1) =>
   Array.from(
@@ -40,52 +17,51 @@ export const initializeArrayWithRange = (end: number, start = 0, step = 1) =>
 export const getRandomInteger = (min: number, max: number): number =>
   Math.floor(Math.random() * (max - min + 1)) + min
 
-export const createTile = (tile: Pick<Tile, "x" | "y" | "value">): Tile => ({
-  ...tile,
-  merged: false,
-  id: index.get(),
-  move(axis, value) {
-    this[axis] = value
-  },
-  merge() {
-    this.merged = true
-  },
-  update() {
-    this.value *= 2
-  },
-})
+export const getRandomItem = <T>(array: T[]): T =>
+  array[getRandomInteger(0, array.length - 1)]
 
-export const sortAndGroup = (
-  tiles: Tile[],
-  { sortBy, groupBy, order }: MovementOptions
-) =>
-  initializeArrayWithRange(BOARD_SIZE).map((i) =>
-    deepClone<Tile[]>(tiles)
-      .filter((tile) => tile[groupBy] === i)
-      .sort((a, b) => order * (a[sortBy] - b[sortBy]))
-  )
+export const transformIntoMatrix = (array: Tile[], axis: AxisType) => {
+  const groupBy = axis === Axis.X ? Axis.Y : Axis.X
+  return array
+    .reduce<Tile[][]>(
+      (result, tile) => {
+        result[tile[groupBy]].push(tile)
+        return result
+      },
+      Array.from({ length: BOARD_SIZE }, () => [])
+    )
+    .map((row) => row.sort((a, b) => a[axis] - b[axis]))
+}
 
 export const moveItems = (tiles: Tile[], axis: AxisType, order: Order) => {
-  const changes: Tile[] = []
-  let score: number = 0
+  let score = 0
+  let moved = false
   const firstPosition = order === Order.ASC ? 0 : BOARD_SIZE - 1
+  order === Order.DESC && tiles.reverse()
+
   tiles.reduce((curr: Tile | null, next: Tile) => {
     const position = curr ? curr[axis] + order : firstPosition
     if (!!curr && !curr.merged && curr.value === next.value) {
-      next.merged = true
-      next[axis] = curr[axis]
-      curr.value *= 2
+      next.merge()
+      next.move(axis, curr[axis])
+      curr.update()
       score += curr.value
-      changes.push(next)
-      !changes.includes(curr) && changes.push(curr)
-    } else if (position !== next[axis]) {
-      next[axis] = position
-      changes.push(next)
+    } else if (next[axis] !== position) {
+      moved = true
+      next.move(axis, position)
     }
     return next
   }, null)
-  return changes
+  return {
+    score,
+    moved,
+  }
 }
+
+export const handleMove =
+  ({ axis, order }: MovementOptions) =>
+  (row: Tile[]) =>
+    moveItems(row, axis, order)
 
 export const getMovementOptions = (key: string) => {
   const direction = key
@@ -93,3 +69,13 @@ export const getMovementOptions = (key: string) => {
     .toUpperCase() as Uppercase<DirectionType>
   return movementOptions[direction]
 }
+
+export const toCoords = (value: number) => ({
+  y: Math.floor(value / BOARD_SIZE),
+  x: value % BOARD_SIZE,
+})
+
+export const allPositions = initializeArrayWithRange(
+  BOARD_SIZE * BOARD_SIZE,
+  0
+).map(toCoords)

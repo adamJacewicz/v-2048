@@ -10,9 +10,12 @@ export const Axis: Record<Uppercase<AxisType>, AxisType> = {
   Y: "y",
 } as const
 
-export const movementOptions: Record<Uppercase<DirectionType>, MovementOptions> = {
-  UP: { groupBy: Axis.X, sortBy: Axis.Y, order: Order.ASC },
-  DOWN: { groupBy: Axis.X, sortBy: Axis.Y, order: Order.DESC },
-  LEFT: { groupBy: Axis.Y, sortBy: Axis.X, order: Order.ASC },
-  RIGHT: { groupBy: Axis.Y, sortBy: Axis.X, order: Order.DESC },
+export const movementOptions: Record<
+  Uppercase<DirectionType>,
+  MovementOptions
+> = {
+  UP: { axis: Axis.Y, order: Order.ASC },
+  DOWN: { axis: Axis.Y, order: Order.DESC },
+  LEFT: { axis: Axis.X, order: Order.ASC },
+  RIGHT: { axis: Axis.X, order: Order.DESC },
 }

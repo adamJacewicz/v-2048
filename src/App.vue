@@ -19,27 +19,32 @@
 import Board from "./components/Board.vue"
 import Stats from "./components/Stats.vue"
 import Header from "./components/Header.vue"
-import { onBeforeMount, onBeforeUnmount } from "vue"
+import {
+  onBeforeMount,
+  onBeforeUnmount,
+} from "vue"
 import { useGame } from "./stores/game"
 import { SwipeDirection, useEventListener, useSwipe } from "@vueuse/core"
 import { getMovementOptions } from "./utils"
+import { storeToRefs } from "pinia"
 
 const game = useGame()
-const { move, reset } = game
+const { move, reset, score } = game
+const { tiles } = storeToRefs(game)
 
-const onSwipeEnd = (e: TouchEvent, direction: SwipeDirection): void =>
-  getMovementOptions(direction) && move(getMovementOptions(direction))
-
-const onKeyDown = ({ key }: KeyboardEvent): void =>
-  getMovementOptions(key) && move(getMovementOptions(key))
+const handleMove = <
+  D extends keyof typeof SwipeDirection | undefined,
+  E extends D extends SwipeDirection ? TouchEvent : KeyboardEvent
+>(
+  event: E,
+  direction?: D
+): void => move(getMovementOptions(direction ?? event.key))
 
 const { stop: removeSwipeListener } = useSwipe(document, {
-  onSwipeEnd,
+  onSwipeEnd: handleMove,
 })
-useEventListener("keydown", onKeyDown)
-onBeforeMount(() => {
-  game.tiles.length === 0 && game.score === 0 && reset()
-})
+useEventListener("keydown", handleMove)
+onBeforeMount(() => tiles.value.length === 0 && score === 0 && reset())
 onBeforeUnmount(removeSwipeListener)
 </script>
 <style lang="scss">

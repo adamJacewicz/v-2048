@@ -5,7 +5,7 @@ export type Tile = {
   y: number
   value: number
   merged: boolean
-  id: number
+  id: string
   move(axis: AxisType, value: number): void
   update(): void
   merge(): void
@@ -18,9 +18,8 @@ export type GameState = {
 }
 
 export type MovementOptions = {
-  sortBy: AxisType
+  axis: AxisType
   order: Order
-  groupBy: AxisType
 }
 
 export type DirectionType = "up" | "down" | "left" | "right"

@@ -21,13 +21,17 @@
 </template>
 <script setup lang="ts">
 import { useGame } from "../stores/game"
-import { computed } from "vue"
+import { computed, ref } from "vue"
 import { storeToRefs } from "pinia"
+import { TransitionPresets, useTransition } from "@vueuse/core"
 const game = useGame()
-const { score, best } = storeToRefs(game)
-
+const {  best } = storeToRefs(game)
+const ss = useTransition(computed(() => game.score), {
+  duration: 100,
+})
 const stats = computed(() => [
-  { value: score, label: "score" },
+  { value: ss.value.toFixed(0), label: "score" },
   { value: best, label: "best" },
 ])
+
 </script>
