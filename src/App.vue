@@ -31,8 +31,8 @@ import { useGame } from "./stores/game"
 //   move(getMovementOptions(direction ?? event.key))
 // }
 const game = useGame()
-const { initGame, gameOver, move } = game
-const { tiles, score } = toRefs(game)
+const { initGame, gameOver, move, reset } = game
+const { tiles } = toRefs(game)
 
 const handleMove = <
   D extends keyof typeof SwipeDirection | undefined,
@@ -47,6 +47,9 @@ const { stop: removeSwipeListener } = useSwipe(document, {
   threshold: 10,
 })
 useEventListener("keydown", handleMove)
-onBeforeMount(() => initGame())
+onBeforeMount(() => {
+  gameOver && reset()
+  tiles.value.length === 0 && initGame()
+})
 onBeforeUnmount(removeSwipeListener)
 </script>

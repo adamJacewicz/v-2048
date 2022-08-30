@@ -45,11 +45,9 @@ export const use2048 = (
   }
 
   const initGame = () => {
-    if (gameOver.value || !persist) reset()
-    if (!persist || !tiles.value.length) {
-      addTile()
-      addTile()
-    }
+    reset()
+    addTile()
+    addTile()
   }
 
   const move = (options: MovementOptions) => {
