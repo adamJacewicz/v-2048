@@ -1,26 +1,24 @@
-import { AxisType, Tile } from "../stores/game.types"
-import { readonly, shallowRef } from "vue"
-import { v4 as useId } from "uuid"
+import { AxisType, Position, Tile } from "../stores/game.types"
+import { computed, reactive, readonly } from "vue"
+import { generateId } from "./use-id"
 
 export const useTile = (
-  pos: Record<AxisType, number> & Partial<Tile>
+  initialValues: Partial<Tile> & Position
 ): Readonly<Tile> => {
-  const tile = {
-    x: shallowRef(pos.x),
-    y: shallowRef(pos.y),
-    value: shallowRef(pos.value ?? 2),
-    merged: shallowRef(pos.merged ?? false),
-    id: pos.id ?? useId(),
-  }
-
-  const move = (axis: AxisType, value: number) => (tile[axis].value = value)
-  const merge = () => (tile.merged.value = true)
-  const update = () => (tile.value.value *= 2)
-
+  const tile = reactive({
+    value: 2,
+    merged: false,
+    id: generateId(),
+    ...initialValues,
+  })
   return readonly({
-    ...tile,
-    move,
-    merge,
-    update,
+    x: computed(() => tile.x),
+    y: computed(() => tile.y),
+    value: computed(() => tile.value),
+    merged: computed(() => tile.merged),
+    id: computed(() => tile.id),
+    move: (axis: AxisType, value: number) => (tile[axis] = value),
+    merge: () => (tile.merged = true),
+    update: () => (tile.value *= 2),
   })
 }

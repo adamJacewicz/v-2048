@@ -1,9 +1,10 @@
 @import "tailwind.css";
 
-body {
-	overscroll-behavior: contain;
+body, html {
+  overscroll-behavior: contain;
+  height: 100vh;
 }
 
 html {
-	font-size: clamp(14px, 3vw, 16px);
+  font-size: clamp(14px, 3vw, 16px);
 }

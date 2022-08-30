@@ -1,6 +1,6 @@
 <template>
   <div
-    class="relative flex aspect-[1/1] flex-wrap overflow-hidden rounded-md bg-brown-400 p-1.5"
+    class="relative flex aspect-[1/1] flex-wrap overflow-hidden rounded-md bg-primary-500 p-1.5"
   >
     <div
       v-if="gameOver"
@@ -21,9 +21,10 @@
 </template>
 <script setup lang="ts">
 import { BOARD_SIZE } from "../utils"
+import Tile from "../components/Tile.vue"
 import { useGame } from "../stores/game"
-import Tile from "./Tile.vue"
-import { storeToRefs } from "pinia"
-const { gameOver, tiles } = storeToRefs(useGame())
+import { toRefs } from "vue"
+const { tiles, gameOver } = toRefs(useGame())
+
 const blankTiles = BOARD_SIZE * BOARD_SIZE
 </script>

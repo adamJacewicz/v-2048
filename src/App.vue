@@ -1,7 +1,7 @@
 <template>
-  <div class="flex h-[100vh] max-h-full flex-col bg-brown-200">
+  <div class="flex h-full flex-col bg-primary-200">
     <div class="m-auto w-[max(280px,80%)] max-w-[500px]">
-      <div class="flex">
+      <div class="flex gap-4">
         <Header class="flex-1" />
         <Stats class="flex-1" />
       </div>
@@ -20,21 +20,19 @@
 import Board from "./components/Board.vue"
 import Stats from "./components/Stats.vue"
 import Header from "./components/Header.vue"
-import { onBeforeMount, onBeforeUnmount } from "vue"
-import { useGame } from "./stores/game"
+import { onBeforeMount, onBeforeUnmount, toRef, toRefs } from "vue"
 import { SwipeDirection, useEventListener, useSwipe } from "@vueuse/core"
 import { getMovementOptions } from "./utils"
-import { storeToRefs } from "pinia"
-
-const game = useGame()
-const { move, reset, score } = game
-const { tiles } = storeToRefs(game)
+import { useGame } from "./stores/game"
 
 // function handleMove(event: TouchEvent, direction: SwipeDirection): void
 // function handleMove(event: KeyboardEvent, direction?: undefined): void
 // function handleMove(event: TouchEvent | KeyboardEvent, direction?: SwipeDirection) {
 //   move(getMovementOptions(direction ?? event.key))
 // }
+const game = useGame()
+const { initGame, gameOver, move } = game
+const { tiles, score } = toRefs(game)
 
 const handleMove = <
   D extends keyof typeof SwipeDirection | undefined,
@@ -49,6 +47,6 @@ const { stop: removeSwipeListener } = useSwipe(document, {
   threshold: 10,
 })
 useEventListener("keydown", handleMove)
-onBeforeMount(() => tiles.value.length === 0 && score === 0 && reset())
+onBeforeMount(() => initGame())
 onBeforeUnmount(removeSwipeListener)
 </script>

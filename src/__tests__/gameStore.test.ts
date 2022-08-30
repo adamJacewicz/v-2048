@@ -1,30 +1,114 @@
-import { setActivePinia, createPinia } from "pinia"
-import { useGame } from "../stores/game"
 import { expect } from "vitest"
+import { useGame } from "../stores/game"
+import { useTile } from "../composables/use-tile"
+import { movementOptions } from "../constants"
+import { Position, Tile } from "../stores/game.types"
+import { BOARD_SIZE, hasSamePosition, toCoords } from "../utils"
 
 describe("Game store", () => {
+  const game = useGame()
+  const fillTiles = (array: Array<Partial<Tile> & Position>) => {
+    array.forEach((item) => game.addTile(useTile(item)))
+  }
   beforeEach(() => {
-    setActivePinia(createPinia())
+    game.initGame()
   })
 
   it("update score", () => {
-    const game = useGame()
     expect(game.score).toBe(0)
+    expect(game.best).toBe(0)
     game.updateScore(4)
     expect(game.score).toBe(4)
-  })
-
-  it("reset", () => {
-    const game = useGame()
-    game.reset()
-    expect(game.score).toBe(0)
-    expect(game.tiles.length).toBe(2)
+    expect(game.best).toBe(4)
   })
 
   it("add tile", () => {
-    const game = useGame()
-    game.addRandomTile()
-    game.addRandomTile()
-    expect(game.tiles.length).toBe(2)
+    game.reset()
+    expect(game.tiles).toHaveLength(0)
+    game.addTile(useTile({ x: 3, y: 3 }))
+    game.addTile(useTile({ x: 2, y: 3 }))
+    expect(game.tiles).toHaveLength(2)
+  })
+
+  it("won't add new tiles when there are no free cells", () => {
+    game.reset()
+    expect(game.tiles).toHaveLength(0)
+    fillTiles(
+      Array.from({ length: 20 }, (_, i) => ({
+        ...toCoords(i),
+        value: i,
+      }))
+    )
+    expect(game.tiles).toHaveLength(16)
+    game.addTile()
+    game.addTile()
+    game.addTile()
+    expect(game.tiles).toHaveLength(16)
+    expect(game.availablePositions).toHaveLength(0)
+  })
+
+  it("move", () => {
+    game.reset()
+    fillTiles([
+      { x: 2, y: 2, value: 2, merged: false },
+      { x: 2, y: 3, value: 2, merged: false },
+      { x: 1, y: 0, value: 4, merged: false },
+      { x: 1, y: 3, value: 4, merged: false },
+    ])
+    game.move(movementOptions.DOWN)
+    const result = [
+      {
+        x: 2,
+        y: 3,
+        value: 2,
+        merged: true,
+      },
+      {
+        x: 2,
+        y: 3,
+        value: 4,
+        merged: false,
+      },
+      { x: 1, y: 3, value: 4, merged: true },
+      {
+        x: 1,
+        y: 3,
+        value: 8,
+        merged: false,
+      },
+    ]
+    expect(
+      result.every((tile) =>
+        game.tiles.find(
+          ({ merged, value, ...rest }) =>
+            hasSamePosition(tile, rest) &&
+            tile.value === value &&
+            tile.merged === merged
+        )
+      )
+    ).toBeTruthy()
+  })
+
+  it("remove merged tiles", () => {
+    game.reset()
+    fillTiles([
+      { x: 2, y: 2, merged: false },
+      { x: 2, y: 3, merged: true },
+      { x: 1, y: 1, merged: true },
+    ])
+    expect(game.tiles.filter((item) => item.merged)).toHaveLength(2)
+    game.removeMergedTiles()
+    expect(game.tiles.filter((item) => item.merged)).toHaveLength(0)
+  })
+
+  it("gameover when there is no free cells and any of tiles can't be merged", () => {
+    game.reset()
+    fillTiles(
+      Array.from({ length: BOARD_SIZE * BOARD_SIZE }, (_, i) => ({
+        ...toCoords(i),
+        value: i,
+      }))
+    )
+    expect(game.gameOver).toBeTruthy()
   })
 })

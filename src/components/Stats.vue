@@ -1,40 +1,35 @@
 <template>
   <div class="flex flex-col">
-    <div class="flex">
+    <div class="flex gap-2">
       <div
         v-for="item in stats"
         :key="item.label"
-        class="flex flex-1 flex-col rounded-md bg-brown-400 p-2 text-center uppercase text-gray-100 last-of-type:ml-2"
+        class="flex-1 rounded-md bg-primary-500 py-2 px-4 text-center font-bold uppercase text-primary-800"
       >
-        <div>{{ item.label }}</div>
-        <div class="text-2xl leading-6">
+        <div class="text-sm">{{ item.label }}</div>
+        <div class="text-primary-100 text-lg leading-5">
           {{ item.value }}
         </div>
       </div>
     </div>
-    <button
-      @click="reset"
-      class="mt-2 rounded-md border bg-brown-600 p-2 text-sm text-gray-100 sm:text-lg"
-    >
-      New game
-    </button>
+    <Button @click="initGame" class="ml-auto mt-2"> New game </Button>
   </div>
 </template>
 <script setup lang="ts">
-import { useGame } from "../stores/game"
-import { computed, ref } from "vue"
-import { storeToRefs } from "pinia"
+import { computed, toRefs } from "vue"
 import { useTransition } from "@vueuse/core"
-const game = useGame()
-const { reset } = game
-const { score, best } = storeToRefs(game)
-
-const points = ref([score, best])
+import Button from "./Button.vue"
+import { useGame } from "../stores/game"
 const labels = ["score", "best"]
+const { score, best, initGame } = toRefs(useGame())
 
-const data = useTransition(points.value, {
-  duration: 100,
-})
+const data = useTransition(
+  computed(() => [score.value, best.value]),
+  {
+    duration: 100,
+  }
+)
+
 const stats = computed(() =>
   data.value.map((value, i) => ({
     label: labels[i],
