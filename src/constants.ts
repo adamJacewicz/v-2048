@@ -1,4 +1,4 @@
-import { AxisType, DirectionType, MovementOptions } from "./stores/game.types"
+import { AxisType, DirectionType, MovementOptions } from "./game.types"
 
 export enum Order {
   ASC = 1,
@@ -9,6 +9,8 @@ export const Axis: Record<Uppercase<AxisType>, AxisType> = {
   X: "x",
   Y: "y",
 } as const
+
+export const keyList = ["ArrowUp", "ArrowDown", "ArrowRight", "ArrowLeft"]
 
 export const movementOptions: Record<
   Uppercase<DirectionType>,

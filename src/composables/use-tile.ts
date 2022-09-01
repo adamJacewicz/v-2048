@@ -1,6 +1,6 @@
-import { AxisType, Position, Tile } from "../stores/game.types"
+import { AxisType, Position, Tile } from "../game.types"
 import { computed, reactive, readonly } from "vue"
-import { generateId } from "./use-id"
+import { generateId } from "../utils"
 
 export const useTile = (
   initialValues: Partial<Tile> & Position

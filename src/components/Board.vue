@@ -4,17 +4,15 @@
   >
     <div
       v-if="gameOver"
-      class="absolute top-0 left-0 right-0 bottom-0 z-10 flex items-center justify-center bg-black bg-opacity-60"
+      class="absolute top-0 left-0 right-0 bottom-0 z-10 flex items-center justify-center bg-black bg-opacity-60 text-4xl text-gray-200"
     >
-      <h2 class="text-4xl text-gray-200">Game over!</h2>
+      Game over!
     </div>
 
-    <div
-      class="m-1.5 h-[calc(25%-0.75rem)] w-[calc(25%-0.75rem)] rounded-md bg-tile-blank"
-      :key="_"
-      v-for="_ in blankTiles"
-    />
-    <div class="absolute left-0 top-0 right-0 bottom-0 m-1.5">
+    <div class="h-1/4 w-1/4 p-1.5" :key="i" v-for="i in blankTiles">
+      <div class="h-full w-full rounded-md bg-tile-blank" />
+    </div>
+    <div class="absolute top-0 left-0 right-0 bottom-0 m-1.5">
       <Tile :tile="tile" :key="tile.id" v-for="tile in tiles" />
     </div>
   </div>
@@ -22,9 +20,8 @@
 <script setup lang="ts">
 import { BOARD_SIZE } from "../utils"
 import Tile from "../components/Tile.vue"
-import { useGame } from "../stores/game"
+import { use2048 } from "../composables/use-2048"
 import { toRefs } from "vue"
-const { tiles, gameOver } = toRefs(useGame())
-
+const { tiles, gameOver } = toRefs(use2048())
 const blankTiles = BOARD_SIZE * BOARD_SIZE
 </script>

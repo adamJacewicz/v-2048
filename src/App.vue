@@ -1,5 +1,5 @@
 <template>
-  <div class="flex h-full flex-col bg-primary-200">
+  <div class="flex h-full bg-primary-200">
     <div class="m-auto w-[max(280px,80%)] max-w-[500px]">
       <div class="flex gap-4">
         <Header class="flex-1" />
@@ -20,36 +20,29 @@
 import Board from "./components/Board.vue"
 import Stats from "./components/Stats.vue"
 import Header from "./components/Header.vue"
-import { onBeforeMount, onBeforeUnmount, toRef, toRefs } from "vue"
-import { SwipeDirection, useEventListener, useSwipe } from "@vueuse/core"
+import { onBeforeMount, toRefs } from "vue"
+import { onKeyStroke, SwipeDirection, useSwipe } from "@vueuse/core"
 import { getMovementOptions } from "./utils"
-import { useGame } from "./stores/game"
+import { use2048 } from "./composables/use-2048"
+import { keyList } from "./constants"
 
-// function handleMove(event: TouchEvent, direction: SwipeDirection): void
-// function handleMove(event: KeyboardEvent, direction?: undefined): void
-// function handleMove(event: TouchEvent | KeyboardEvent, direction?: SwipeDirection) {
-//   move(getMovementOptions(direction ?? event.key))
-// }
-const game = useGame()
-const { initGame, gameOver, move, reset } = game
-const { tiles } = toRefs(game)
+const game = use2048()
+const { move, reset, initGame } = game
+const { gameOver, tiles } = toRefs(game)
+const onSwipeEnd = (event: TouchEvent, direction: SwipeDirection): void =>
+  move(getMovementOptions(direction))
 
-const handleMove = <
-  D extends keyof typeof SwipeDirection | undefined,
-  E extends D extends SwipeDirection ? TouchEvent : KeyboardEvent
->(
-  event: E,
-  direction?: D
-): void => move(getMovementOptions(direction ?? event.key))
+const onKeyDown = (event: KeyboardEvent): void =>
+  move(getMovementOptions(event.key))
 
-const { stop: removeSwipeListener } = useSwipe(document, {
-  onSwipeEnd: handleMove,
+useSwipe(document, {
+  onSwipeEnd,
   threshold: 10,
 })
-useEventListener("keydown", handleMove)
+
+onKeyStroke(keyList, onKeyDown)
 onBeforeMount(() => {
-  gameOver && reset()
+  gameOver.value && reset()
   tiles.value.length === 0 && initGame()
 })
-onBeforeUnmount(removeSwipeListener)
 </script>

@@ -1,39 +1,35 @@
-import { GameState, MovementOptions, Tile } from "../stores/game.types"
-import { computed, reactive, readonly, toRefs, watch } from "vue"
+import { GameState, MovementOptions, Position, Tile } from "../game.types"
+import { computed, readonly, toRefs } from "vue"
 import { useTile } from "./use-tile"
 import {
   allPositions,
   BOARD_SIZE,
   getRandomItem,
-  handleMove,
-  isCellAvailable,
+  hasSamePosition,
+  moveRow,
   transformIntoMatrix,
 } from "../utils"
 import { Axis } from "../constants"
-import { useLocalStorage } from "./use-local-storage"
+import { useStorage } from "@vueuse/core"
 
-const storage = useLocalStorage("2048")
-
-const getInitialState = (): GameState => ({
+const getInitialState = () => ({
   tiles: [],
   score: 0,
   best: 0,
 })
 
-export const use2048 = (
-  { persist } = {
-    persist: true,
-  }
-) => {
-  const state = reactive<GameState>(
-    persist ? storage.value || getInitialState() : getInitialState()
-  )
-  const { tiles, score, best } = toRefs(state)
-
-  persist &&
-    watch(state, () => {
-      storage.value = state
-    })
+const createStore = () => {
+  const state = useStorage<GameState>("2048", getInitialState(), localStorage, {
+    serializer: {
+      read: (value) => {
+        const parsedState = JSON.parse(value)
+        parsedState.tiles = parsedState.tiles.map(useTile)
+        return parsedState
+      },
+      write: JSON.stringify,
+    },
+  })
+  const { tiles, score, best } = toRefs(state.value)
 
   const updateScore = (value: number) => {
     score.value += value
@@ -50,15 +46,12 @@ export const use2048 = (
     addTile()
   }
 
-  const move = (options: MovementOptions) => {
-    if (!options) return
+  const move = ({ axis, order }: MovementOptions) => {
     removeMergedTiles()
-    const move = handleMove(options)
     let points = 0
     let tilesMoved = false
-    const matrix = transformIntoMatrix(tiles.value, options.axis)
-    matrix.forEach((row) => {
-      const { score, moved } = move(row)
+    transformIntoMatrix(tiles.value, axis).forEach((row) => {
+      const { score, moved } = moveRow(row, axis, order)
       points += score
       tilesMoved = tilesMoved || moved
     })
@@ -66,8 +59,8 @@ export const use2048 = (
     tilesMoved && addTile()
   }
 
-  const isMergePossible = computed(() =>
-    transformIntoMatrix(tiles.value, Axis.X)
+  const isMergePossible = computed(() => {
+    return transformIntoMatrix(tiles.value, Axis.X)
       .flat()
       .some((tile, i, arr) => {
         const nextTile = arr[i + 1]
@@ -79,7 +72,7 @@ export const use2048 = (
           (bottomTile && bottomTile.value === tile.value)
         )
       })
-  )
+  })
 
   const reset = () => {
     tiles.value = []
@@ -97,22 +90,27 @@ export const use2048 = (
     tiles.value.push(newTile)
   }
 
+  const isCellAvailable = (coords: Position) =>
+    !tiles.value.some((tile) => hasSamePosition(tile, coords))
+
   const availablePositions = computed(() =>
-    allPositions.filter((position) => isCellAvailable(tiles.value, position))
+    allPositions.filter(isCellAvailable)
   )
 
-  return readonly({
-    score,
-    best,
-    tiles,
-    updateScore,
-    removeMergedTiles,
-    initGame,
-    reset,
-    move,
-    isMergePossible,
-    gameOver,
-    addTile,
-    availablePositions,
-  })
+  return () =>
+    readonly({
+      score,
+      best,
+      tiles,
+      isMergePossible,
+      gameOver,
+      availablePositions,
+      updateScore,
+      removeMergedTiles,
+      initGame,
+      reset,
+      move,
+      addTile,
+    })
 }
+export const use2048 = createStore()

@@ -1,12 +1,12 @@
 import { expect } from "vitest"
-import { useGame } from "../stores/game"
+import { use2048 } from "../composables/use-2048"
 import { useTile } from "../composables/use-tile"
 import { movementOptions } from "../constants"
-import { Position, Tile } from "../stores/game.types"
+import { Position, Tile } from "../game.types"
 import { BOARD_SIZE, hasSamePosition, toCoords } from "../utils"
 
 describe("Game store", () => {
-  const game = useGame()
+  const game = use2048()
   const fillTiles = (array: Array<Partial<Tile> & Position>) => {
     array.forEach((item) => game.addTile(useTile(item)))
   }
