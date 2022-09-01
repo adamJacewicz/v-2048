@@ -20,7 +20,7 @@
 <script setup lang="ts">
 import { BOARD_SIZE } from "../utils"
 import Tile from "../components/Tile.vue"
-import { use2048 } from "../composables/use-2048"
+import use2048 from "../composables/use-2048"
 import { toRefs } from "vue"
 const { tiles, gameOver } = toRefs(use2048())
 const blankTiles = BOARD_SIZE * BOARD_SIZE

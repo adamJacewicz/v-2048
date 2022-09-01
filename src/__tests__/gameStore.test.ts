@@ -1,5 +1,5 @@
 import { expect } from "vitest"
-import { use2048 } from "../composables/use-2048"
+import use2048 from "../composables/use-2048"
 import { useTile } from "../composables/use-tile"
 import { movementOptions } from "../constants"
 import { Position, Tile } from "../game.types"

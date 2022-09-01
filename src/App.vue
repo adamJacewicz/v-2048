@@ -17,23 +17,22 @@
   </div>
 </template>
 <script setup lang="ts">
-import Board from "./components/Board.vue"
+import Board from "components/Board.vue"
 import Stats from "./components/Stats.vue"
 import Header from "./components/Header.vue"
 import { onBeforeMount, toRefs } from "vue"
 import { onKeyStroke, SwipeDirection, useSwipe } from "@vueuse/core"
 import { getMovementOptions } from "./utils"
-import { use2048 } from "./composables/use-2048"
+import use2048 from "./composables/use-2048"
 import { keyList } from "./constants"
 
-const game = use2048()
-const { move, reset, initGame } = game
-const { gameOver, tiles } = toRefs(game)
+const { move, reset, initGame, gameOver, tiles } = toRefs(use2048())
+
 const onSwipeEnd = (event: TouchEvent, direction: SwipeDirection): void =>
-  move(getMovementOptions(direction))
+  move.value(getMovementOptions(direction))
 
 const onKeyDown = (event: KeyboardEvent): void =>
-  move(getMovementOptions(event.key))
+  move.value(getMovementOptions(event.key))
 
 useSwipe(document, {
   onSwipeEnd,
@@ -42,7 +41,7 @@ useSwipe(document, {
 
 onKeyStroke(keyList, onKeyDown)
 onBeforeMount(() => {
-  gameOver.value && reset()
-  tiles.value.length === 0 && initGame()
+  gameOver.value && reset.value()
+  tiles.value.length === 0 && initGame.value()
 })
 </script>

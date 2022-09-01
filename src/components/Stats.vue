@@ -12,17 +12,16 @@
         </div>
       </div>
     </div>
-    <Button @click="game.initGame" class="ml-auto mt-2"> New game </Button>
+    <Button @click="initGame" class="ml-auto mt-2"> New game </Button>
   </div>
 </template>
 <script setup lang="ts">
 import { computed, toRefs } from "vue"
 import { useTransition } from "@vueuse/core"
 import Button from "./Button.vue"
-import { use2048 } from "../composables/use-2048"
+import use2048 from "../composables/use-2048"
 const labels = ["score", "best"]
-const game = use2048()
-const { score, best } = toRefs(game)
+const { score, best, initGame } = toRefs(use2048())
 const data = useTransition(
   computed(() => [score.value, best.value]),
   {
