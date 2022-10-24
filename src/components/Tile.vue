@@ -6,7 +6,7 @@
     <div
       ref="tileInner"
       class="inner flex h-full w-full items-center justify-center rounded-md"
-      :class="`bg-tile-${tile.value}`"
+      :class="bgClass"
     >
       {{ tile.value }}
     </div>
@@ -24,13 +24,11 @@ const popKeyframes = [
 const props = defineProps<{ tile: Tile }>()
 const tileInner = ref<HTMLDivElement>()
 
-watch(
-  () => props.tile.value,
-  () =>
-    tileInner.value?.animate(popKeyframes, {
-      duration: 200,
-    })
-)
+const bgClass = computed(() => {
+  const exp = Math.log2(props.tile.value) % 11
+  return `bg-tile-${Math.pow(2,exp)}`
+})
+
 const position = computed(() => {
   const { merged, x, y } = props.tile
   return {
@@ -38,6 +36,14 @@ const position = computed(() => {
     transform: `translate(calc(100% * ${x}), calc(100% * ${y}))`,
   }
 })
+
+watch(
+  () => props.tile.value,
+  () =>
+    tileInner.value?.animate(popKeyframes, {
+      duration: 200,
+    })
+)
 </script>
 <style scoped lang="scss">
 @keyframes Scale {

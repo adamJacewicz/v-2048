@@ -7,25 +7,31 @@ import {
   getRandomItem,
   hasSamePosition,
   moveRow,
-  transformIntoMatrix,
+  groupBy,
 } from "../utils"
 import { Axis } from "../constants"
 import { useStorage } from "@vueuse/core"
 
-const getInitialState = () => ({
-  tiles: [],
-  score: 0,
-  best: 0,
-})
+const getInitialState = () => {
+  return {
+    tiles: [],
+    score: 0,
+    best: 0,
+  }
+}
 
 const state = useStorage<GameState>("2048", getInitialState(), localStorage, {
   serializer: {
     read: (value) => {
-      const parsedState = JSON.parse(value)
-      parsedState.tiles = parsedState.tiles.map(useTile)
-      return parsedState
+      try {
+        const parsedState = JSON.parse(value)
+        parsedState.tiles = parsedState.tiles.map(useTile)
+        return parsedState
+      } catch (err) {
+        return getInitialState()
+      }
     },
-    write: (v) => JSON.stringify(v),
+    write: JSON.stringify,
   },
 })
 
@@ -36,7 +42,8 @@ const updateScore = (value: number) => {
 
 const removeMergedTiles = () => {
   const notMerged = state.value.tiles.filter((tile) => !tile.merged)
-  !!notMerged.length && (state.value.tiles = notMerged)
+  state.value.tiles.length !== notMerged.length &&
+    (state.value.tiles = notMerged)
 }
 
 const initGame = () => {
@@ -49,7 +56,7 @@ const move = ({ axis, order }: MovementOptions) => {
   removeMergedTiles()
   let points = 0
   let tilesMoved = false
-  transformIntoMatrix(state.value.tiles, axis).forEach((row) => {
+  groupBy(state.value.tiles, axis).forEach((row) => {
     const { score, moved } = moveRow(row, axis, order)
     points += score
     tilesMoved = tilesMoved || moved
@@ -59,7 +66,7 @@ const move = ({ axis, order }: MovementOptions) => {
 }
 
 const isMergePossible = computed(() => {
-  return transformIntoMatrix(
+  return groupBy(
     state.value.tiles.filter((items) => !items.merged),
     Axis.X
   )

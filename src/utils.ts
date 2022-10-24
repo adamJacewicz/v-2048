@@ -1,6 +1,5 @@
 import { AxisType, DirectionType, Position, Tile } from "./game.types"
 import { Axis, movementOptions, Order } from "./constants"
-import { unref } from "vue"
 
 export const BOARD_SIZE = 4
 
@@ -10,17 +9,20 @@ export const getRandomInteger = (min: number, max: number): number =>
 export const getRandomItem = <T>(array: T[]): T =>
   array[getRandomInteger(0, array.length - 1)]
 
-export const transformIntoMatrix = (array: Tile[], axis: AxisType) => {
-  const groupBy = axis === Axis.X ? Axis.Y : Axis.X
+export const sortBy = (array: Tile[], axis: AxisType) =>
+  array.sort((a, b) => a[axis] - b[axis])
+
+export const groupBy = (array: Tile[], axis: AxisType) => {
+  const groupAxis = axis === Axis.X ? Axis.Y : Axis.X
   return array
     .reduce<Tile[][]>(
       (result, tile) => {
-        result[tile[groupBy]].push(tile)
+        result[tile[groupAxis]].push(tile)
         return result
       },
       Array.from({ length: BOARD_SIZE }, () => [])
     )
-    .map((row) => row.sort((a, b) => a[axis] - b[axis]))
+    .map((row) => sortBy(row, axis))
 }
 
 export const moveRow = (row: Tile[], axis: AxisType, order: Order) => {
