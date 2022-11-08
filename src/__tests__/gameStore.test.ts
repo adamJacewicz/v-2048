@@ -109,6 +109,6 @@ describe("Game store", () => {
         value: i,
       }))
     )
-    expect(game.gameOver).toBeTruthy()
+    expect(game.isGameOver).toBeTruthy()
   })
 })

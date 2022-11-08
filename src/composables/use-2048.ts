@@ -1,34 +1,36 @@
 import { GameState, MovementOptions, Position, Tile } from "../game.types"
 import { computed, readonly } from "vue"
-import { useTile } from "./use-tile"
 import {
   allPositions,
   BOARD_SIZE,
   getRandomItem,
   hasSamePosition,
-  moveRow,
   groupBy,
+  moveRows,
+  generateId,
 } from "../utils"
 import { Axis } from "../constants"
 import { useStorage } from "@vueuse/core"
 
-const getInitialState = () => {
-  return {
-    tiles: [],
-    score: 0,
-    best: 0,
-  }
-}
+export const createTile = (initialValues: Partial<Tile> & Position) => ({
+  value: Math.random() < 0.8 ? 2 : 4,
+  merged: false,
+  id: generateId(),
+  ...initialValues,
+})
 
-const state = useStorage<GameState>("2048", getInitialState(), localStorage, {
+const getInitialState = () => ({
+  tiles: [],
+  score: 0,
+  best: 0,
+})
+const state = useStorage<GameState>("2048", getInitialState, localStorage, {
   serializer: {
     read: (value) => {
       try {
-        const parsedState = JSON.parse(value)
-        parsedState.tiles = parsedState.tiles.map(useTile)
-        return parsedState
+        return JSON.parse(value)
       } catch (err) {
-        return getInitialState()
+        return getInitialState
       }
     },
     write: JSON.stringify,
@@ -41,9 +43,7 @@ const updateScore = (value: number) => {
 }
 
 const removeMergedTiles = () => {
-  const notMerged = state.value.tiles.filter((tile) => !tile.merged)
-  state.value.tiles.length !== notMerged.length &&
-    (state.value.tiles = notMerged)
+  state.value.tiles = state.value.tiles.filter((tile) => !tile.merged)
 }
 
 const initGame = () => {
@@ -54,53 +54,48 @@ const initGame = () => {
 
 const move = ({ axis, order }: MovementOptions) => {
   removeMergedTiles()
-  let points = 0
-  let tilesMoved = false
-  groupBy(state.value.tiles, axis).forEach((row) => {
-    const { score, moved } = moveRow(row, axis, order)
-    points += score
-    tilesMoved = tilesMoved || moved
-  })
-  updateScore(points)
-  tilesMoved && addTile()
+  const orderedBoard = groupBy(state.value.tiles, axis)
+  const { score, updated } = moveRows(orderedBoard, axis, order)
+  updateScore(score)
+  updated && addTile()
 }
-
-const isMergePossible = computed(() => {
-  return groupBy(
-    state.value.tiles.filter((items) => !items.merged),
-    Axis.X
-  )
-    .flat()
-    .some((tile, i, arr) => {
-      const nextTile = arr[i + 1]
-      const bottomTile = arr[i + BOARD_SIZE]
-      return (
-        (nextTile && nextTile.y === tile.y && nextTile.value === tile.value) ||
-        (bottomTile && bottomTile.value === tile.value)
-      )
-    })
-})
 
 const reset = () => {
   state.value.tiles = []
   state.value.score = 0
 }
 
-const gameOver = computed(
-  () => !isMergePossible.value && availablePositions.value.length === 0
-)
-
 const addTile = (tile?: Tile): void => {
   if (!availablePositions.value.length) return
   const position = getRandomItem(availablePositions.value)
-  const newTile = tile ?? useTile(position)
+  const newTile = tile ?? createTile(position)
   state.value.tiles.push(newTile)
 }
 
 const isCellAvailable = (coords: Position) =>
   !state.value.tiles.some((tile) => hasSamePosition(tile, coords))
 
+const isGameOver = computed(
+  () => !isMergePossible.value && availablePositions.value.length === 0
+)
+
 const availablePositions = computed(() => allPositions.filter(isCellAvailable))
+
+const isMergePossible = computed(() =>
+  groupBy(
+    state.value.tiles.filter((items) => !items.merged),
+    Axis.X
+  )
+    .flat()
+    .some((tile, i, arr) => {
+      const nextTile = arr.slice(i + 1).find(({ y }) => y === tile.y)
+      const bottomTile = arr.slice(i + BOARD_SIZE).find(({ x }) => x === tile.x)
+      return (
+        (nextTile && nextTile.value === tile.value) ||
+        (bottomTile && bottomTile.value === tile.value)
+      )
+    })
+)
 
 export default () =>
   readonly({
@@ -108,7 +103,7 @@ export default () =>
     best: computed(() => state.value.best),
     tiles: computed(() => state.value.tiles),
     isMergePossible,
-    gameOver,
+    isGameOver,
     availablePositions,
     updateScore,
     removeMergedTiles,

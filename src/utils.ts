@@ -3,54 +3,70 @@ import { Axis, movementOptions, Order } from "./constants"
 
 export const BOARD_SIZE = 4
 
+export const initialize2DArray = (
+  w = 0,
+  h = 0,
+  val: ((x: unknown, i: number) => unknown) | unknown
+) =>
+  Array.from({ length: h }, (_, y) =>
+    Array.from({ length: w }, (_, x) =>
+      typeof val === "function" ? val({ x, y }) : val
+    )
+  )
+
+export const randomBoolean = () => Math.random() >= 0.5
+
 export const getRandomInteger = (min: number, max: number): number =>
   Math.floor(Math.random() * (max - min + 1)) + min
 
 export const getRandomItem = <T>(array: T[]): T =>
   array[getRandomInteger(0, array.length - 1)]
 
-export const sortBy = (array: Tile[], axis: AxisType) =>
-  array.sort((a, b) => a[axis] - b[axis])
-
 export const groupBy = (array: Tile[], axis: AxisType) => {
   const groupAxis = axis === Axis.X ? Axis.Y : Axis.X
   return array
     .reduce<Tile[][]>(
       (result, tile) => {
-        result[tile[groupAxis]].push(tile)
+        result[tile[groupAxis]]?.push(tile)
         return result
       },
-      Array.from({ length: BOARD_SIZE }, () => [])
+      [[], [], [], []]
     )
-    .map((row) => sortBy(row, axis))
+    .map((row) => row.sort((a, b) => a[axis] - b[axis]))
 }
 
-export const moveRow = (row: Tile[], axis: AxisType, order: Order) => {
+const mergeTiles = (source: Tile, target: Tile) => {
+  updateTile(source, { x: target.x, y: target.y, merged: true })
+  updateTile(target, { value: target.value * 2 })
+}
+const updateTile = (target: Tile, value: Partial<Tile>) => {
+  Object.assign(target, value)
+}
+
+export const moveRows = (arr: Tile[][], axis: AxisType, order: Order) => {
   let score = 0
-  let moved = false
+  let updated = false
   const firstPosition = order === Order.ASC ? 0 : BOARD_SIZE - 1
-  order === Order.DESC && row.reverse()
-  const arrLength = row.length
-  for (let i = -1; i < arrLength - 1; i++) {
-    const curr = row[i]
-    const next = row[i + 1]
-    const position = !!curr ? curr[axis] + order : firstPosition
-
-    if (!!curr && !curr.merged && curr.value === next.value) {
-      next.merge()
-      next.move(axis, curr[axis])
-      curr.update()
-      score += curr.value
-      moved = true
-    } else if (next[axis] !== position) {
-      moved = true
-      next.move(axis, position)
+  arr.forEach((row) => {
+    order === Order.DESC && row.reverse()
+    const arrLength = row.length
+    for (let i = -1; i < arrLength - 1; i++) {
+      const curr = row[i]
+      const next = row[i + 1]
+      const position = !!curr ? curr[axis] + order : firstPosition
+      if (!!curr && !curr.merged && curr.value === next.value) {
+        mergeTiles(next, curr)
+        score += curr.value
+        updated = true
+      } else if (next[axis] !== position) {
+        updated = true
+        updateTile(next, { [axis]: position })
+      }
     }
-  }
-
+  })
   return {
     score,
-    moved,
+    updated,
   }
 }
 

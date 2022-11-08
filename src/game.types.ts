@@ -4,9 +4,6 @@ export type Tile = {
   value: number
   merged: boolean
   id: string
-  move(axis: AxisType, value: number): void
-  update(): void
-  merge(): void
 } & Position
 
 export type GameState = {

@@ -3,8 +3,8 @@
     class="relative flex aspect-[1/1] flex-wrap overflow-hidden rounded-md bg-primary-500 p-1.5"
   >
     <div
-      v-if="gameOver"
-      class="absolute top-0 left-0 right-0 bottom-0 z-10 flex items-center justify-center bg-black bg-opacity-60 text-4xl text-gray-200"
+      v-if="isGameOver"
+      class="absolute top-0 left-0 right-0 bottom-0 z-10 flex items-center justify-center bg-black bg-opacity-60 text-gray-200"
     >
       Game over!
     </div>
@@ -22,6 +22,6 @@ import { BOARD_SIZE } from "../utils"
 import Tile from "../components/Tile.vue"
 import use2048 from "../composables/use-2048"
 import { toRefs } from "vue"
-const { tiles, gameOver } = toRefs(use2048())
+const { tiles, isGameOver } = toRefs(use2048())
 const blankTiles = BOARD_SIZE * BOARD_SIZE
 </script>

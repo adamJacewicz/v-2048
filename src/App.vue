@@ -26,7 +26,7 @@ import { getMovementOptions } from "./utils"
 import use2048 from "./composables/use-2048"
 import { keyList } from "./constants"
 
-const { move, reset, initGame, gameOver, tiles } = toRefs(use2048())
+const { move, reset, initGame, isGameOver, tiles, isMergePossible } = toRefs(use2048())
 
 const onSwipeEnd = (event: TouchEvent, direction: SwipeDirection): void =>
   move.value(getMovementOptions(direction))
@@ -41,7 +41,7 @@ useSwipe(document, {
 
 onKeyStroke(keyList, onKeyDown)
 onBeforeMount(() => {
-  gameOver.value && reset.value()
+  isGameOver.value && reset.value()
   tiles.value.length === 0 && initGame.value()
 })
 </script>

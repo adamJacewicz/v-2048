@@ -12,7 +12,9 @@
         </div>
       </div>
     </div>
-    <Button @click="initGame" class="ml-auto mt-2"> New game </Button>
+    <div class="mt-2 flex justify-between items-center">
+      <Button @click="initGame">New game</Button>
+    </div>
   </div>
 </template>
 <script setup lang="ts">
