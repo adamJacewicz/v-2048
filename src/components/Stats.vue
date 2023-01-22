@@ -1,34 +1,43 @@
 <template>
-  <div class="flex flex-1 flex-col">
-    <div class="flex justify-end text-sm font-medium uppercase text-gray-100">
+  <div class="flex flex-col">
+    <div class="flex gap-2">
       <div
         v-for="item in stats"
         :key="item.label"
-        class="ml-2 max-w-[100px] flex-1 rounded-md border-0 bg-brown-400 py-2 px-4 text-center"
+        class="flex-1 rounded-md bg-primary-500 py-2 px-4 text-center font-bold uppercase text-primary-800"
       >
-        <div>{{ item.label }}</div>
-        <div class="text-2xl leading-6">
+        <div class="text-sm">{{ item.label }}</div>
+        <div class="text-lg leading-5 text-primary-100">
           {{ item.value }}
         </div>
       </div>
     </div>
-    <button
-      @click="gameStore.init"
-      class="mt-auto ml-auto rounded-md border bg-brown-600 py-2 px-4 text-lg font-medium text-gray-100"
-    >
-      New game
-    </button>
+    <div class="mt-2 flex items-center justify-between">
+      <Button @click="initGame">New game</Button>
+    </div>
   </div>
 </template>
 <script setup lang="ts">
-import { useGameStore } from "../stores/game"
-import { computed } from "vue"
-import { storeToRefs } from "pinia"
-const gameStore = useGameStore()
-const { score, best } = storeToRefs(gameStore)
+import { computed, toRefs } from "vue"
+import { useTransition } from "@vueuse/core"
+import Button from "./Button.vue"
+import use2048 from "../composables/use-2048"
+const { score, best, initGame } = toRefs(use2048())
 
+const scoreTransition = useTransition(score, {
+  duration: 100,
+})
+const bestTransition = useTransition(best, {
+  duration: 100,
+})
 const stats = computed(() => [
-  { value: score, label: "score" },
-  { value: best, label: "best" },
+  {
+    label: "score",
+    value: scoreTransition.value.toFixed(0),
+  },
+  {
+    label: "best",
+    value: bestTransition.value.toFixed(0),
+  },
 ])
 </script>

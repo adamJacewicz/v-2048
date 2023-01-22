@@ -1,27 +1,65 @@
 <template>
   <div
-    v-show="!tile.merged"
-    :style="tilePosition"
-    :class="{ 'new-tile': tile.value === 2 }"
-    class="tile absolute m-1.5 h-[calc(25%-0.75rem)] w-[calc(25%-0.75rem)] text-4xl font-bold text-gray-600 duration-200 sm:text-5xl"
+    :style="position"
+    ref="aaa"
+    class="tile-size absolute text-4xl font-bold text-gray-600 duration-200 sm:text-5xl"
   >
     <div
-      class="inner flex h-full w-full items-center justify-center rounded-md duration-200"
-      :class="`bg-tile-${tile.value}`"
+      ref="tileInner"
+      class="inner flex items-center justify-center"
+      :class="bgClass"
     >
       {{ tile.value }}
     </div>
   </div>
 </template>
 <script setup lang="ts">
-import { Tile } from "../stores/game.types"
-import { computed } from "vue"
-const props = defineProps<{ tile: Tile }>()
+import { Tile } from "../game.types"
+import { computed, ref, watch } from "vue"
 
-const tilePosition = computed(() => {
-  const { x, y } = props.tile
+const popKeyframes = [
+  { transform: "scale(1)" },
+  { transform: "scale(1.2)" },
+  { transform: "scale(1)" },
+]
+
+const props = defineProps<{ tile: Tile }>()
+const tileInner = ref<HTMLDivElement>()
+
+const bgClass = computed(() => {
+  const exp = Math.log2(props.tile.value) % 11
+  return `bg-tile-${Math.pow(2, exp)}`
+})
+
+const position = computed(() => {
+  const { merged, x, y } = props.tile
   return {
-    transform: `translate(calc((100% + 0.75rem) * ${x}), calc((100% + 0.75rem) * ${y}))`,
+    zIndex: merged ? 0 : 1,
+    transform: `translate(calc(100% * ${x}), calc(100% * ${y}))`,
   }
 })
+
+watch(
+  () => props.tile.value,
+  () =>
+    tileInner.value?.animate(popKeyframes, {
+      duration: 200,
+    })
+)
 </script>
+<style scoped lang="scss">
+@keyframes Scale {
+  0% {
+    transform: scale(0);
+  }
+
+  100% {
+    transform: scale(1);
+  }
+}
+
+.inner {
+  animation: Scale 200ms backwards;
+  animation-delay: 50ms;
+}
+</style>

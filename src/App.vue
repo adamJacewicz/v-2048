@@ -1,59 +1,47 @@
 <template>
-  <div class="flex h-[100vh] max-h-full flex-col bg-brown-200">
-    <div class="m-auto w-[max(280px,70%)] max-w-[500px]">
-      <div class="flex">
+  <div class="flex h-full bg-primary-200">
+    <div class="m-auto w-[max(280px,80%)] max-w-[500px]">
+      <div class="flex gap-4">
         <Header class="flex-1" />
         <Stats class="flex-1" />
       </div>
       <Board class="my-5" />
-      <section class="text-lg text-gray-600">
+      <p class="text-lg text-gray-600">
         <span class="font-bold">HOW TO PLAY:</span> Use your
-        <span class="font-bold">arrow keys</span> to move the tiles. When two
-        tiles with the same number touch, they
+        <span class="font-bold">arrow keys</span> or
+        <span class="font-bold">swipe</span> to move the tiles. When two tiles
+        with the same number touch, they
         <span class="font-bold">merge into one!</span>
-      </section>
+      </p>
     </div>
   </div>
 </template>
 <script setup lang="ts">
-import Board from "./components/Board.vue"
+import Board from "components/Board.vue"
 import Stats from "./components/Stats.vue"
 import Header from "./components/Header.vue"
-import { onBeforeMount, onBeforeUnmount } from "vue"
-import { useGameStore } from "./stores/game"
-import { SwipeDirection, useSwipe } from "@vueuse/core"
-import { directionParameters, DirectionType } from "./constants"
-const gameStore = useGameStore()
+import { onBeforeMount, toRefs } from "vue"
+import { onKeyStroke, SwipeDirection, useSwipe } from "@vueuse/core"
+import { getMovementOptions } from "./utils"
+import use2048 from "./composables/use-2048"
+import { keyList } from "./constants"
 
-const onSwipeEnd = (e: TouchEvent, direction: SwipeDirection): void =>
-  moveHandler(direction)
+const { move, reset, initGame, isGameOver, tiles } = toRefs(use2048())
 
-const onKeyDown = ({ key }: KeyboardEvent): void =>
-  moveHandler(key.replace(/arrow/i, ""))
+const onSwipeEnd = (event: TouchEvent, direction: SwipeDirection): void =>
+  move.value(getMovementOptions(direction))
 
-const moveHandler = (direction: string): void => {
-  const parsedDirection = direction.toUpperCase() as Uppercase<DirectionType>
-  if (parsedDirection in directionParameters) {
-    const { axis, desc } = directionParameters[parsedDirection]
-    gameStore.move(axis, desc)
-  }
-}
-const { stop: removeSwipeListener } = useSwipe(document, {
+const onKeyDown = (event: KeyboardEvent): void =>
+  move.value(getMovementOptions(event.key))
+
+useSwipe(document, {
   onSwipeEnd,
+  threshold: 10,
 })
 
+onKeyStroke(keyList, onKeyDown)
 onBeforeMount(() => {
-  document.addEventListener("keydown", onKeyDown)
-  gameStore.tiles.length === 0 && gameStore.score === 0 && gameStore.init()
-})
-
-onBeforeUnmount(() => {
-  removeSwipeListener()
-  document.removeEventListener("keydown", onKeyDown)
+  isGameOver.value && reset.value()
+  tiles.value.length === 0 && initGame.value()
 })
 </script>
-<style lang="scss">
-body {
-  overscroll-behavior: contain;
-}
-</style>

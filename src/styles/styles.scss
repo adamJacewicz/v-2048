@@ -1,0 +1,19 @@
+@import "tailwind.css";
+
+body,
+html {
+  overscroll-behavior: contain;
+  overflow: hidden;
+  height: 100vh;
+}
+
+html {
+  font-size: clamp(14px, 3vw, 16px);
+}
+
+.tile-size {
+  @apply h-1/4 w-1/4 p-1.5;
+  & > div {
+    @apply h-full w-full rounded-md;
+  }
+}

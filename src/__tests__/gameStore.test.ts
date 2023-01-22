@@ -1,30 +1,79 @@
-import { setActivePinia, createPinia } from "pinia"
-import { useGameStore } from "../stores/game"
 import { expect } from "vitest"
+import use2048, { createTile } from "../composables/use-2048"
+import { movementOptions } from "../constants"
+import { Position, Tile } from "../game.types"
+import { BOARD_SIZE, toCoords } from "../utils"
 
 describe("Game store", () => {
+  const maxTiles = BOARD_SIZE * BOARD_SIZE
+  const game = use2048()
+  const fillTiles = (
+    array: Array<(Position & Partial<Tile>) | undefined> = Array(
+      BOARD_SIZE * BOARD_SIZE
+    ).fill(undefined)
+  ) => {
+    array.forEach((item) => game.addTile(item))
+  }
   beforeEach(() => {
-    setActivePinia(createPinia())
+    game.reset()
   })
 
   it("update score", () => {
-    const gameStore = useGameStore()
-    expect(gameStore.score).toBe(0)
-    gameStore.updateScore(4)
-    expect(gameStore.score).toBe(4)
-  })
-
-  it("init", () => {
-    const gameStore = useGameStore()
-    gameStore.init()
-    expect(gameStore.score).toBe(0)
-    expect(gameStore.tiles.length).toBe(2)
+    game.updateScore(4)
+    expect(game.score).toBe(4)
+    expect(game.best).toBe(4)
   })
 
   it("add tile", () => {
-    const gameStore = useGameStore()
-    gameStore.addTile()
-    gameStore.addTile()
-    expect(gameStore.tiles.length).toBe(2)
+    game.addTile({ x: 3, y: 3 })
+    game.addTile({ x: 2, y: 3 })
+    expect(game.tiles).toMatchObject([
+      { x: 3, y: 3 },
+      { x: 2, y: 3 },
+    ])
+  })
+
+  it("won't add new tiles when there are no free cells", () => {
+    for (let i = 0; i < maxTiles + 5; i++) {
+      game.addTile()
+    }
+    expect(game.tiles).toHaveLength(16)
+    expect(game.availablePositions).toHaveLength(0)
+  })
+
+  it("move", () => {
+    const initial = [
+      { x: 2, y: 2, value: 2, merged: false },
+      { x: 2, y: 3, value: 2, merged: false },
+      { x: 1, y: 0, value: 4, merged: false },
+      { x: 1, y: 3, value: 4, merged: false },
+    ]
+    const result = [
+      { x: 2, y: 3, value: 2, merged: true },
+      { x: 2, y: 3, value: 4, merged: false },
+      { x: 1, y: 3, value: 4, merged: true },
+      { x: 1, y: 3, value: 8, merged: false },
+      { value: 2, merged: false },
+    ]
+    fillTiles(initial)
+    game.move(movementOptions.DOWN)
+    expect(game.tiles).toMatchObject(result)
+  })
+
+  it("remove merged tiles", () => {
+    fillTiles([
+      { x: 2, y: 2, merged: false },
+      { x: 2, y: 3, merged: true },
+      { x: 1, y: 1, merged: true },
+    ])
+    game.removeMergedTiles()
+    expect(game.tiles).toMatchObject([{ x: 2, y: 2, merged: false }])
+  })
+
+  it("gameover when there is no free cells and any of tiles can't be merged", () => {
+    for (let i = 0; i < maxTiles; i++) {
+      game.addTile({ value: i })
+    }
+    expect(game.isGameOver).toBe(true)
   })
 })
