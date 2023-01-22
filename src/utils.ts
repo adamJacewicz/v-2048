@@ -14,14 +14,13 @@ export const initialize2DArray = (
     )
   )
 
-export const randomBoolean = () => Math.random() >= 0.5
 
 export const getRandomInteger = (min: number, max: number): number =>
   Math.floor(Math.random() * (max - min + 1)) + min
 
-export const getRandomItem = <T>(array: T[]): T =>
-  array[getRandomInteger(0, array.length - 1)]
-
+export const getRandomItem = <T>(array: T[]): T | void => {
+  if (array.length) return array[getRandomInteger(0, array.length - 1)]
+}
 export const groupBy = (array: Tile[], axis: AxisType) => {
   const groupAxis = axis === Axis.X ? Axis.Y : Axis.X
   return array
@@ -36,11 +35,10 @@ export const groupBy = (array: Tile[], axis: AxisType) => {
 }
 
 const mergeTiles = (source: Tile, target: Tile) => {
-  updateTile(source, { x: target.x, y: target.y, merged: true })
-  updateTile(target, { value: target.value * 2 })
-}
-const updateTile = (target: Tile, value: Partial<Tile>) => {
-  Object.assign(target, value)
+  source.x = target.x
+  source.y = target.y
+  source.merged = true
+  target.value *= 2
 }
 
 export const moveRows = (arr: Tile[][], axis: AxisType, order: Order) => {
@@ -60,7 +58,7 @@ export const moveRows = (arr: Tile[][], axis: AxisType, order: Order) => {
         updated = true
       } else if (next[axis] !== position) {
         updated = true
-        updateTile(next, { [axis]: position })
+        next[axis] = position
       }
     }
   })
@@ -69,6 +67,7 @@ export const moveRows = (arr: Tile[][], axis: AxisType, order: Order) => {
     updated,
   }
 }
+
 
 export const getMovementOptions = (key: string) => {
   const direction = key

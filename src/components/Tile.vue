@@ -1,11 +1,12 @@
 <template>
   <div
     :style="position"
-    class="absolute h-1/4 w-1/4 p-1.5 text-4xl font-bold text-gray-600 duration-200 sm:text-5xl"
+    ref="aaa"
+    class="tile-size absolute text-4xl font-bold text-gray-600 duration-200 sm:text-5xl"
   >
     <div
       ref="tileInner"
-      class="inner flex h-full w-full items-center justify-center rounded-md"
+      class="inner flex items-center justify-center"
       :class="bgClass"
     >
       {{ tile.value }}
@@ -15,6 +16,7 @@
 <script setup lang="ts">
 import { Tile } from "../game.types"
 import { computed, ref, watch } from "vue"
+
 const popKeyframes = [
   { transform: "scale(1)" },
   { transform: "scale(1.2)" },
@@ -26,7 +28,7 @@ const tileInner = ref<HTMLDivElement>()
 
 const bgClass = computed(() => {
   const exp = Math.log2(props.tile.value) % 11
-  return `bg-tile-${Math.pow(2,exp)}`
+  return `bg-tile-${Math.pow(2, exp)}`
 })
 
 const position = computed(() => {

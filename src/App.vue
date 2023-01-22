@@ -6,13 +6,13 @@
         <Stats class="flex-1" />
       </div>
       <Board class="my-5" />
-      <section class="text-lg text-gray-600">
+      <p class="text-lg text-gray-600">
         <span class="font-bold">HOW TO PLAY:</span> Use your
         <span class="font-bold">arrow keys</span> or
         <span class="font-bold">swipe</span> to move the tiles. When two tiles
         with the same number touch, they
         <span class="font-bold">merge into one!</span>
-      </section>
+      </p>
     </div>
   </div>
 </template>
@@ -26,7 +26,7 @@ import { getMovementOptions } from "./utils"
 import use2048 from "./composables/use-2048"
 import { keyList } from "./constants"
 
-const { move, reset, initGame, isGameOver, tiles, isMergePossible } = toRefs(use2048())
+const { move, reset, initGame, isGameOver, tiles } = toRefs(use2048())
 
 const onSwipeEnd = (event: TouchEvent, direction: SwipeDirection): void =>
   move.value(getMovementOptions(direction))

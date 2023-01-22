@@ -12,7 +12,7 @@
         </div>
       </div>
     </div>
-    <div class="mt-2 flex justify-between items-center">
+    <div class="mt-2 flex items-center justify-between">
       <Button @click="initGame">New game</Button>
     </div>
   </div>
@@ -22,18 +22,22 @@ import { computed, toRefs } from "vue"
 import { useTransition } from "@vueuse/core"
 import Button from "./Button.vue"
 import use2048 from "../composables/use-2048"
-const labels = ["score", "best"]
 const { score, best, initGame } = toRefs(use2048())
-const data = useTransition(
-  computed(() => [score.value, best.value]),
+
+const scoreTransition = useTransition(score, {
+  duration: 100,
+})
+const bestTransition = useTransition(best, {
+  duration: 100,
+})
+const stats = computed(() => [
   {
-    duration: 100,
-  }
-)
-const stats = computed(() =>
-  data.value.map((value, i) => ({
-    label: labels[i],
-    value: value.toFixed(0),
-  }))
-)
+    label: "score",
+    value: scoreTransition.value.toFixed(0),
+  },
+  {
+    label: "best",
+    value: bestTransition.value.toFixed(0),
+  },
+])
 </script>

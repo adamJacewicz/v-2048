@@ -9,8 +9,8 @@
       Game over!
     </div>
 
-    <div class="h-1/4 w-1/4 p-1.5" :key="i" v-for="i in blankTiles">
-      <div class="h-full w-full rounded-md bg-tile-blank" />
+    <div class="tile-size" :key="i" v-for="i in blankTiles">
+      <div class="bg-tile-blank" />
     </div>
     <div class="absolute top-0 left-0 right-0 bottom-0 m-1.5">
       <Tile :tile="tile" :key="tile.id" v-for="tile in tiles" />

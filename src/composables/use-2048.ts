@@ -24,6 +24,7 @@ const getInitialState = () => ({
   score: 0,
   best: 0,
 })
+
 const state = useStorage<GameState>("2048", getInitialState, localStorage, {
   serializer: {
     read: (value) => {
@@ -65,21 +66,33 @@ const reset = () => {
   state.value.score = 0
 }
 
-const addTile = (tile?: Tile): void => {
-  if (!availablePositions.value.length) return
-  const position = getRandomItem(availablePositions.value)
-  const newTile = tile ?? createTile(position)
-  state.value.tiles.push(newTile)
+const addTile = (tile?: Partial<Tile>): void => {
+  if (state.value.tiles.some(({ x, y }) => x === tile?.x && y === tile?.y))
+    return
+  const newTile = {
+    ...getRandomItem(availablePositions.value),
+    ...tile,
+  }
+  if (
+    "x" in newTile &&
+    typeof newTile.x === "number" &&
+    "y" in newTile &&
+    typeof newTile.y === "number"
+  ) {
+    state.value.tiles.push(createTile(newTile as Partial<Tile> & Position))
+  }
 }
-
-const isCellAvailable = (coords: Position) =>
-  !state.value.tiles.some((tile) => hasSamePosition(tile, coords))
 
 const isGameOver = computed(
   () => !isMergePossible.value && availablePositions.value.length === 0
 )
 
-const availablePositions = computed(() => allPositions.filter(isCellAvailable))
+const availablePositions = computed<Position[]>(() =>
+  allPositions.filter(
+    (coords: Position) =>
+      !state.value.tiles.some((tile) => hasSamePosition(tile, coords))
+  )
+)
 
 const isMergePossible = computed(() =>
   groupBy(
