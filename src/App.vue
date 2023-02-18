@@ -13,11 +13,10 @@ import Header from "./components/Header.vue"
 import Manual from "./components/Manual.vue"
 import { onBeforeMount } from "vue"
 import { onKeyStroke, useSwipe } from "@vueuse/core"
-import { store, move, initGame } from "./composables/use-2048"
+import { store } from "./store"
 import { keyList } from "./constants"
 import { keyType } from "./game.types"
-
-const { isGameOver, tiles } = store
+const { isGameOver, tiles, move, initGame } = store
 
 const onSwipeEnd = (event: TouchEvent, direction: keyType): void => {
   move(direction)
@@ -34,6 +33,6 @@ useSwipe(document, {
 
 onKeyStroke(keyList, onKeyDown)
 onBeforeMount(() => {
-  (isGameOver.value || tiles.value.length === 0) && initGame()
+  ;(isGameOver.value || tiles.value.length === 0) && initGame()
 })
 </script>

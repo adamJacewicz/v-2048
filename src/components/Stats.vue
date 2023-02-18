@@ -18,12 +18,12 @@
   </div>
 </template>
 <script setup lang="ts">
-import { computed } from "vue"
+import { computed, toRefs, unref } from "vue"
 import { useTransition } from "@vueuse/core"
 import Button from "./Button.vue"
-import { store, initGame } from "../composables/use-2048"
+import { store } from "../store"
 
-const { score, best } = store
+const { score, best, initGame } = store
 
 const scoreTransition = useTransition(score, {
   duration: 100,

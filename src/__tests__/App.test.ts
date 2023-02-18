@@ -1,10 +1,10 @@
 import { mount, shallowMount } from "@vue/test-utils"
-import { describe, expect } from "vitest"
-import Tile from "../components/Tile.vue"
+import { describe } from "vitest"
 import App from "../App.vue"
-import { store, reset, addTile } from "../composables/use-2048"
+import { store } from "../store"
 
 describe("App", () => {
+  const { addTile, reset } = store
   it("mount component", async () => {
     const wrapper = mount(App)
     const event = new KeyboardEvent("keydown", {
@@ -26,8 +26,6 @@ describe("App", () => {
       x: 2,
       y: 1,
     })
-    console.log(store.tiles.value)
     window.dispatchEvent(event)
-    console.log(wrapper.getComponent(Tile).html())
   })
 })

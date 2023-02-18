@@ -8,6 +8,6 @@
 </template>
 
 <script setup lang="ts">
-import { store } from "../composables/use-2048"
+import { store } from "../store"
 const { isGameOver } = store
 </script>

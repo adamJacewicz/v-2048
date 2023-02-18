@@ -10,10 +10,10 @@
   </div>
 </template>
 <script setup lang="ts">
-import { BOARD_SIZE } from "../utils"
 import Tile from "../components/Tile.vue"
 import GameOver from "../components/GameOver.vue"
-import { store } from "../composables/use-2048"
+import { store } from "../store"
+import { BOARD_SIZE } from "../constants"
 const { tiles } = store
 const blankTiles = BOARD_SIZE * BOARD_SIZE
 </script>

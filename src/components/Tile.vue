@@ -1,5 +1,5 @@
 <template>
-  <div :style="position" :class="tileClasses">
+  <div :style="position" :class="tileClasses" >
     <div
       ref="tileInner"
       class="inner flex h-full items-center justify-center rounded-md"
