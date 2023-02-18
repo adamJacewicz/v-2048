@@ -11,9 +11,20 @@ html {
   font-size: clamp(14px, 3vw, 16px);
 }
 
-.tile-size {
-  @apply h-1/4 w-1/4 p-1.5;
-  & > div {
-    @apply h-full w-full rounded-md;
+.tile {
+  @apply h-1/4 w-1/4 p-1 xs:p-1.5;
+  
+  &-blank {
+    position: relative;
+    &:after {
+      @apply  m-1 xs:m-1.5 rounded-md bg-tile-blank;
+      content: '';
+      display: block;
+      top:0;
+      left: 0;
+      bottom: 0;
+      right: 0;
+      position: absolute;
+    }
   }
 }

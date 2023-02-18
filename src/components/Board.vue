@@ -1,18 +1,11 @@
 <template>
   <div
-    class="relative flex aspect-[1/1] flex-wrap overflow-hidden rounded-md bg-primary-500 p-1.5"
+    class="relative flex aspect-[1/1] flex-wrap overflow-hidden rounded-md bg-primary-500 p-1 xs:p-1.5"
   >
-    <div
-      v-if="isGameOver"
-      class="absolute top-0 left-0 right-0 bottom-0 z-10 flex items-center justify-center bg-black bg-opacity-60 text-gray-200"
-    >
-      Game over!
-    </div>
+    <GameOver />
 
-    <div class="tile-size" :key="i" v-for="i in blankTiles">
-      <div class="bg-tile-blank" />
-    </div>
-    <div class="absolute top-0 left-0 right-0 bottom-0 m-1.5">
+    <div class="tile tile-blank" :key="i" v-for="i in blankTiles" />
+    <div class="absolute top-0 left-0 right-0 bottom-0 m-1 xs:m-1.5">
       <Tile :tile="tile" :key="tile.id" v-for="tile in tiles" />
     </div>
   </div>
@@ -20,6 +13,7 @@
 <script setup lang="ts">
 import { BOARD_SIZE } from "../utils"
 import Tile from "../components/Tile.vue"
+import GameOver from "../components/GameOver.vue"
 import use2048 from "../composables/use-2048"
 import { toRefs } from "vue"
 const { tiles, isGameOver } = toRefs(use2048())

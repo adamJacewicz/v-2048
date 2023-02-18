@@ -4,17 +4,15 @@
       <div
         v-for="item in stats"
         :key="item.label"
-        class="flex-1 rounded-md bg-primary-500 py-2 px-4 text-center font-bold uppercase text-primary-800"
+        class="flex-1 rounded-md bg-primary-500 p-2 min-w-[65px] text-center font-bold uppercase"
       >
-        <div class="text-sm">{{ item.label }}</div>
-        <div class="text-lg leading-5 text-primary-100">
+        <h5 class="text-sm text-primary-800">{{ item.label }}</h5>
+        <p class="text-lg leading-6 text-primary-50">
           {{ item.value }}
-        </div>
+        </p>
       </div>
     </div>
-    <div class="mt-2 flex items-center justify-between">
-      <Button @click="initGame">New game</Button>
-    </div>
+    <Button class="self-end font-medium mt-2" @click="initGame">New game</Button>
   </div>
 </template>
 <script setup lang="ts">
