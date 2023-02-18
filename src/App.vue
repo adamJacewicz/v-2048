@@ -19,10 +19,13 @@ import { keyType } from "./game.types"
 
 const { move, initGame, isGameOver } = toRefs(use2048())
 
-const onSwipeEnd = (event: TouchEvent, direction: keyType): void =>
+const onSwipeEnd = (event: TouchEvent, direction: keyType): void => {
   move.value(direction)
+}
 
-const onKeyDown = (event: KeyboardEvent): void => move.value(event.key)
+const onKeyDown = (event: KeyboardEvent): void => {
+  move.value(event.key)
+}
 
 useSwipe(document, {
   onSwipeEnd,
