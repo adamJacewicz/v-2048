@@ -1,20 +1,18 @@
-import { expect } from "vitest"
-import use2048, { createTile } from "../composables/use-2048"
-import { movementOptions } from "../constants"
-import { Position, Tile } from "../game.types"
+import { afterEach, expect } from "vitest"
+import use2048 from "../composables/use-2048"
+import { Direction } from "../constants"
+import { MaybeTile } from "../game.types"
 import { BOARD_SIZE, toCoords } from "../utils"
 
 describe("Game store", () => {
   const maxTiles = BOARD_SIZE * BOARD_SIZE
   const game = use2048()
   const fillTiles = (
-    array: Array<(Position & Partial<Tile>) | undefined> = Array(
-      BOARD_SIZE * BOARD_SIZE
-    ).fill(undefined)
+    array: Array<MaybeTile> = Array(BOARD_SIZE * BOARD_SIZE).fill(undefined)
   ) => {
     array.forEach((item) => game.addTile(item))
   }
-  beforeEach(() => {
+  afterEach(() => {
     game.reset()
   })
 
@@ -53,10 +51,11 @@ describe("Game store", () => {
       { x: 2, y: 3, value: 4, merged: false },
       { x: 1, y: 3, value: 4, merged: true },
       { x: 1, y: 3, value: 8, merged: false },
-      { value: 2, merged: false },
+      {},
     ]
+
     fillTiles(initial)
-    game.move(movementOptions.DOWN)
+    game.move(Direction.DOWN)
     expect(game.tiles).toMatchObject(result)
   })
 
@@ -72,7 +71,7 @@ describe("Game store", () => {
 
   it("gameover when there is no free cells and any of tiles can't be merged", () => {
     for (let i = 0; i < maxTiles; i++) {
-      game.addTile({ value: i })
+      game.addTile({ value: i, ...toCoords(i) })
     }
     expect(game.isGameOver).toBe(true)
   })

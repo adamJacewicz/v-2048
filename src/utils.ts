@@ -1,24 +1,12 @@
-import { AxisType, DirectionType, Position, Tile } from "./game.types"
+import { AxisType, keyType, Position, Tile } from "./game.types"
 import { Axis, movementOptions, Order } from "./constants"
 
 export const BOARD_SIZE = 4
 
-export const initialize2DArray = (
-  w = 0,
-  h = 0,
-  val: ((x: unknown, i: number) => unknown) | unknown
-) =>
-  Array.from({ length: h }, (_, y) =>
-    Array.from({ length: w }, (_, x) =>
-      typeof val === "function" ? val({ x, y }) : val
-    )
-  )
-
-
 export const getRandomInteger = (min: number, max: number): number =>
   Math.floor(Math.random() * (max - min + 1)) + min
 
-export const getRandomItem = <T>(array: T[]): T | void => {
+export const getRandomItem = <T>(array: T[]): T | undefined => {
   if (array.length) return array[getRandomInteger(0, array.length - 1)]
 }
 export const groupBy = (array: Tile[], axis: AxisType) => {
@@ -68,11 +56,11 @@ export const moveRows = (arr: Tile[][], axis: AxisType, order: Order) => {
   }
 }
 
-
-export const getMovementOptions = (key: string) => {
-  const direction = key
-    .replace(/arrow/i, "")
-    .toUpperCase() as Uppercase<DirectionType>
+export const getMovementOptions = (key: keyType) => {
+  const direction = Object.keys(movementOptions).find((k) =>
+    key.toUpperCase().includes(k)
+  ) as keyof typeof movementOptions | undefined
+  if (!direction) return
   return movementOptions[direction]
 }
 

@@ -10,6 +10,12 @@ module.exports = {
       sans: ["Open Sans", "sans-serif"],
     },
     extend: {
+      screens: {
+        xs: '576px',
+      },
+      lineHeight: {
+        16: "3.5rem",
+      },
       colors: {
         primary: {
           50: "#fbfbfa",

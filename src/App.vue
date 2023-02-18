@@ -1,38 +1,28 @@
 <template>
-  <div class="flex h-full bg-primary-200">
-    <div class="m-auto w-[max(280px,80%)] max-w-[500px]">
-      <div class="flex gap-4">
-        <Header class="flex-1" />
-        <Stats class="flex-1" />
-      </div>
+  <div class="flex h-full items-center justify-center bg-primary-200">
+    <div class="w-[max(280px,80%)] max-w-[500px]">
+      <Header class="flex-1" />
       <Board class="my-5" />
-      <p class="text-lg text-gray-600">
-        <span class="font-bold">HOW TO PLAY:</span> Use your
-        <span class="font-bold">arrow keys</span> or
-        <span class="font-bold">swipe</span> to move the tiles. When two tiles
-        with the same number touch, they
-        <span class="font-bold">merge into one!</span>
-      </p>
+      <Manual />
     </div>
   </div>
 </template>
 <script setup lang="ts">
 import Board from "components/Board.vue"
-import Stats from "./components/Stats.vue"
 import Header from "./components/Header.vue"
+import Manual from "./components/Manual.vue"
 import { onBeforeMount, toRefs } from "vue"
-import { onKeyStroke, SwipeDirection, useSwipe } from "@vueuse/core"
-import { getMovementOptions } from "./utils"
+import { onKeyStroke, useSwipe } from "@vueuse/core"
 import use2048 from "./composables/use-2048"
 import { keyList } from "./constants"
+import { keyType } from "./game.types"
 
-const { move, reset, initGame, isGameOver, tiles } = toRefs(use2048())
+const { move, initGame, isGameOver } = toRefs(use2048())
 
-const onSwipeEnd = (event: TouchEvent, direction: SwipeDirection): void =>
-  move.value(getMovementOptions(direction))
+const onSwipeEnd = (event: TouchEvent, direction: keyType): void =>
+  move.value(direction)
 
-const onKeyDown = (event: KeyboardEvent): void =>
-  move.value(getMovementOptions(event.key))
+const onKeyDown = (event: KeyboardEvent): void => move.value(event.key)
 
 useSwipe(document, {
   onSwipeEnd,
@@ -41,7 +31,6 @@ useSwipe(document, {
 
 onKeyStroke(keyList, onKeyDown)
 onBeforeMount(() => {
-  isGameOver.value && reset.value()
-  tiles.value.length === 0 && initGame.value()
+  isGameOver.value && initGame.value()
 })
 </script>
