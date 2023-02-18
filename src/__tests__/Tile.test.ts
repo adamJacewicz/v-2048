@@ -21,7 +21,9 @@ describe("Tile", () => {
     })
     const element = wrapper.element
     expect(wrapper.classes().includes("text-gray-100")).toBe(true)
+    // @ts-ignore
     expect(element.style.zIndex).toBe("3")
+    // @ts-ignore
     expect(element.style.transform).toBe("translate(200%, 300%)")
   })
 })
