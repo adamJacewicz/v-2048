@@ -62,7 +62,7 @@ const initGame = () => {
   addTile()
 }
 
-const move = useThrottleFn((key: keyType) => {
+const move = (key: keyType) => {
   const options = getMovementOptions(key)
   if (!options) return
   const { axis, order } = options
@@ -71,7 +71,7 @@ const move = useThrottleFn((key: keyType) => {
   const { score, updated } = moveRows(orderedBoard, axis, order)
   updateScore(score)
   updated && addTile()
-}, 150)
+}
 
 const addTile = (
   tile: MaybeTile | undefined = getRandomItem(availablePositions.value)
