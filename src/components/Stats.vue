@@ -4,7 +4,7 @@
       <div
         v-for="item in stats"
         :key="item.label"
-        class="flex-1 rounded-md bg-primary-500 p-2 min-w-[65px] text-center font-bold uppercase"
+        class="min-w-[65px] flex-1 rounded-md bg-primary-500 p-2 text-center font-bold uppercase"
       >
         <h5 class="text-sm text-primary-800">{{ item.label }}</h5>
         <p class="text-lg leading-6 text-primary-50">
@@ -12,15 +12,18 @@
         </p>
       </div>
     </div>
-    <Button class="self-end font-medium mt-2" @click="initGame">New game</Button>
+    <Button class="mt-2 self-end font-medium" @click="initGame"
+      >New game</Button
+    >
   </div>
 </template>
 <script setup lang="ts">
-import { computed, toRefs } from "vue"
+import { computed } from "vue"
 import { useTransition } from "@vueuse/core"
 import Button from "./Button.vue"
-import use2048 from "../composables/use-2048"
-const { score, best, initGame } = toRefs(use2048())
+import { store, initGame } from "../composables/use-2048"
+
+const { score, best } = store
 
 const scoreTransition = useTransition(score, {
   duration: 100,

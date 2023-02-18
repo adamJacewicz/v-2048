@@ -1,5 +1,5 @@
 import { GameState, keyType, MaybeTile, Position } from "../game.types"
-import { computed, readonly } from "vue"
+import { computed } from "vue"
 import {
   allPositions,
   BOARD_SIZE,
@@ -9,6 +9,7 @@ import {
   moveRows,
   generateId,
   getMovementOptions,
+  inRange,
 } from "../utils"
 import { Axis } from "../constants"
 import { useStorage, useThrottleFn } from "@vueuse/core"
@@ -39,30 +40,32 @@ const state = useStorage<GameState>("2048", getInitialState, localStorage, {
   },
 })
 
-const updateScore = (value: number) => {
+export const updateScore = (value: number) => {
   state.value.score += value
   state.value.score > state.value.best && (state.value.best = state.value.score)
 }
 
-const removeMergedTiles = () => {
+export const removeMergedTiles = () => {
   state.value.tiles = state.value.tiles.filter(({ merged }) => !merged)
 }
 
-const isPositionAvailable = (position: Position) =>
+export const isValidPosition = (position: Position) =>
+  inRange(position.x, 0, BOARD_SIZE) &&
+  inRange(position.y, 0, BOARD_SIZE) &&
   !state.value.tiles.some((tile) => hasSamePosition(tile, position))
 
-const reset = () => {
+export const reset = () => {
   state.value.tiles = []
   state.value.score = 0
 }
 
-const initGame = () => {
+export const initGame = () => {
   reset()
   addTile()
   addTile()
 }
 
-const move = (key: keyType) => {
+export const move = (key: keyType) => {
   const options = getMovementOptions(key)
   if (!options) return
   const { axis, order } = options
@@ -72,12 +75,18 @@ const move = (key: keyType) => {
   updateScore(score)
   updated && addTile()
 }
-
-const addTile = (
-  tile: MaybeTile | undefined = getRandomItem(availablePositions.value)
-): void => {
-  if (!tile || !isPositionAvailable(tile)) return
-  state.value.tiles.push(createTile(tile))
+export const addTile = (tile?: MaybeTile): void => {
+  const newTile = { ...tile }
+  if (!Object.hasOwn(newTile, "x") || !Object.hasOwn(newTile, "y")) {
+    const position = getRandomItem(availablePositions.value)
+    if (!position) return
+    Object.assign(newTile, {
+      x: newTile.x ?? position.x,
+      y: newTile.y ?? position.y,
+    })
+  }
+  if (!isValidPosition(newTile as MaybeTile)) return
+  state.value.tiles.push(createTile(newTile as MaybeTile))
 }
 
 const isGameOver = computed(
@@ -85,7 +94,7 @@ const isGameOver = computed(
 )
 
 const availablePositions = computed<Position[]>(() =>
-  allPositions.filter((coords) => isPositionAvailable(coords))
+  allPositions.filter((coords) => isValidPosition(coords))
 )
 
 const isMergePossible = computed(() => {
@@ -104,18 +113,11 @@ const isMergePossible = computed(() => {
     })
 })
 
-export default () =>
-  readonly({
-    score: computed(() => state.value.score),
-    best: computed(() => state.value.best),
-    tiles: computed(() => state.value.tiles),
-    isMergePossible,
-    isGameOver,
-    availablePositions,
-    updateScore,
-    removeMergedTiles,
-    initGame,
-    move,
-    reset,
-    addTile,
-  })
+export const store = {
+  score: computed(() => state.value.score),
+  best: computed(() => state.value.best),
+  tiles: computed(() => state.value.tiles),
+  isMergePossible,
+  isGameOver,
+  availablePositions,
+}

@@ -84,3 +84,12 @@ export const generateId = () =>
       (crypto.getRandomValues(new Uint8Array(1))[0] & (15 >> (Number(c) / 4)))
     ).toString(16)
   )
+
+export const inRange = <T extends number | Date | string>(
+  n: T,
+  start: T,
+  end?: T
+) => {
+  if (end && start > end) [end, start] = [start, end]
+  return end === undefined ? n >= 0 && n < start : n >= start && n < end
+}
