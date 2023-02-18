@@ -14,13 +14,13 @@ import { Tile } from "../game.types"
 import { computed, ref, watch } from "vue"
 import { popKeyframes } from "../constants"
 
-const { tile } = defineProps<{ tile: Tile }>()
+const props = defineProps<{ tile: Tile }>()
 const tileInner = ref<HTMLDivElement>()
 
-const tileValue = computed(() => tile.value)
+const tileValue = computed(() => props.tile.value)
 
 const tileClasses = computed(() => [
-  tileValue.value < 8 ? " text-primary-800" : " text-gray-100",
+  tileValue.value < 8 ? "text-primary-800" : "text-gray-100",
   "tile",
   "absolute",
   "text-4xl",
@@ -35,7 +35,7 @@ const backgroundClass = computed(() => {
 })
 
 const position = computed(() => {
-  const { merged, x, y } = tile
+  const { merged, x, y } = props.tile
   return {
     zIndex: merged ? 0 : Math.log2(tileValue.value),
     transform: `translate(${x * 100}%, ${y * 100}%)`,
