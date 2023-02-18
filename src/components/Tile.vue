@@ -17,10 +17,8 @@ import { popKeyframes } from "../constants"
 const props = defineProps<{ tile: Tile }>()
 const tileInner = ref<HTMLDivElement>()
 
-const tileValue = computed(() => props.tile.value)
-
 const tileClasses = computed(() => [
-  tileValue.value < 8 ? "text-primary-800" : "text-gray-100",
+  props.tile.value < 8 ? "text-primary-800" : "text-gray-100",
   "tile",
   "absolute",
   "text-4xl",
@@ -30,14 +28,14 @@ const tileClasses = computed(() => [
 ])
 
 const backgroundClass = computed(() => {
-  const exp = Math.log2(tileValue.value) % 11
+  const exp = Math.log2(props.tile.value) % 11
   return `bg-tile-${Math.pow(2, exp)}`
 })
 
 const position = computed(() => {
   const { merged, x, y } = props.tile
   return {
-    zIndex: merged ? 0 : Math.log2(tileValue.value),
+    zIndex: merged ? 0 : Math.log2(props.tile.value),
     transform: `translate(${x * 100}%, ${y * 100}%)`,
   }
 })
