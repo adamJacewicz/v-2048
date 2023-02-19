@@ -1,4 +1,5 @@
 import { AxisType, MovementOptions } from "./game.types"
+import { toCoordinates } from "./utils"
 
 export enum Order {
   ASC = 1,
@@ -32,3 +33,10 @@ export const popKeyframes = [
   { transform: "scale(1.2)" },
   { transform: "scale(1)" },
 ]
+
+export const BOARD_SIZE = 4
+
+export const allPositions = Array.from(
+  { length: BOARD_SIZE * BOARD_SIZE },
+  (_, i) => toCoordinates(i)
+)

@@ -8,7 +8,6 @@
 </template>
 
 <script setup lang="ts">
-import use2048 from "../composables/use-2048"
-import { toRefs } from "vue"
-const { isGameOver } = toRefs(use2048())
+import store from "../store"
+const { isGameOver } = store
 </script>

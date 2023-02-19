@@ -5,7 +5,7 @@
       class="inner flex h-full items-center justify-center rounded-md"
       :class="backgroundClass"
     >
-      {{ tile.value }}
+      {{ props.tile.value }}
     </div>
   </div>
 </template>
@@ -14,13 +14,12 @@ import { Tile } from "../game.types"
 import { computed, ref, watch } from "vue"
 import { popKeyframes } from "../constants"
 
-const { tile } = defineProps<{ tile: Tile }>()
 const tileInner = ref<HTMLDivElement>()
-
-const tileValue = computed(() => tile.value)
+const props = defineProps<{ tile: Tile }>()
+const tileValue = computed(() => props.tile.value)
 
 const tileClasses = computed(() => [
-  tileValue.value < 8 ? " text-primary-800" : " text-gray-100",
+  tileValue.value < 8 ? "text-primary-800" : "text-gray-100",
   "tile",
   "absolute",
   "text-4xl",
@@ -35,18 +34,18 @@ const backgroundClass = computed(() => {
 })
 
 const position = computed(() => {
-  const { merged, x, y } = tile
+  const { merged, x, y } = props.tile
   return {
     zIndex: merged ? 0 : Math.log2(tileValue.value),
     transform: `translate(${x * 100}%, ${y * 100}%)`,
   }
 })
 
-const runPopAnimation = () =>
+const runPopAnimation = () => {
   tileInner.value?.animate(popKeyframes, {
     duration: 200,
   })
-
+}
 watch(tileValue, runPopAnimation, { flush: "post" })
 </script>
 <style scoped lang="scss">

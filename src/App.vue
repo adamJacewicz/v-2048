@@ -11,20 +11,19 @@
 import Board from "components/Board.vue"
 import Header from "./components/Header.vue"
 import Manual from "./components/Manual.vue"
-import { onBeforeMount, toRefs } from "vue"
+import { onBeforeMount } from "vue"
 import { onKeyStroke, useSwipe } from "@vueuse/core"
-import use2048 from "./composables/use-2048"
+import store from "./store"
 import { keyList } from "./constants"
 import { keyType } from "./game.types"
-
-const { move, initGame, isGameOver } = toRefs(use2048())
+const { isGameOver, tiles, move, initGame } = store
 
 const onSwipeEnd = (event: TouchEvent, direction: keyType): void => {
-  move.value(direction)
+  move(direction)
 }
 
 const onKeyDown = (event: KeyboardEvent): void => {
-  move.value(event.key)
+  move(event.key)
 }
 
 useSwipe(document, {
@@ -34,6 +33,6 @@ useSwipe(document, {
 
 onKeyStroke(keyList, onKeyDown)
 onBeforeMount(() => {
-  isGameOver.value && initGame.value()
+  ;(isGameOver.value || tiles.value.length === 0) && initGame()
 })
 </script>
