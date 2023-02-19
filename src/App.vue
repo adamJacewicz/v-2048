@@ -13,7 +13,7 @@ import Header from "./components/Header.vue"
 import Manual from "./components/Manual.vue"
 import { onBeforeMount } from "vue"
 import { onKeyStroke, useSwipe } from "@vueuse/core"
-import { store } from "./store"
+import store from "./store"
 import { keyList } from "./constants"
 import { keyType } from "./game.types"
 const { isGameOver, tiles, move, initGame } = store

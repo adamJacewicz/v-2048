@@ -14,6 +14,6 @@ describe("Button", () => {
         default: "mocked text",
       },
     })
-    expect(wrapper.text()).toContain("mocked text")
+    expect(wrapper.text()).toBe("mocked text")
   })
 })

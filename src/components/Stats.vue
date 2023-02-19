@@ -21,7 +21,7 @@
 import { computed, toRefs, unref } from "vue"
 import { useTransition } from "@vueuse/core"
 import Button from "./Button.vue"
-import { store } from "../store"
+import store from "../store"
 
 const { score, best, initGame } = store
 

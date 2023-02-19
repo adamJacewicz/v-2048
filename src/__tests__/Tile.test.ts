@@ -13,17 +13,23 @@ describe("Tile", () => {
     expect(wrapper.isVisible()).toBe(true)
   })
 
-  it("display proper value", async () => {
-    const wrapper = await mount(Tile, {
+  it("has proper styles", async () => {
+    const wrapper = shallowMount(Tile, {
       props: {
-        tile: { x: 2, y: 3, value: 8, merged: false, id: "MOCKED-ID" },
+        tile: { x: 2, y: 3, value: 4, merged: false, id: "MOCKED-ID" },
       },
     })
-    const element = wrapper.element
-    expect(wrapper.classes().includes("text-gray-100")).toBe(true)
-    // @ts-ignore
-    expect(element.style.zIndex).toBe("3")
-    // @ts-ignore
+    const element = wrapper.element as HTMLElement
+    const inner = wrapper.find(".inner")
+    inner.element.animate = vi.fn()
+
+    expect(wrapper.classes().includes("text-primary-800")).toBe(true)
+    expect(element.style.zIndex).toBe("2")
     expect(element.style.transform).toBe("translate(200%, 300%)")
+
+    await wrapper.setProps({tile: { x: 2, y: 3, value: 16, merged: false, id: "MOCKED-ID" }})
+    expect(wrapper.classes().includes("text-gray-100")).toBe(true)
+    expect(element.style.zIndex).toBe("4")
+    expect(inner.element.animate).toHaveBeenCalled()
   })
 })

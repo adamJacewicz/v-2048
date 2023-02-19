@@ -12,7 +12,7 @@
 <script setup lang="ts">
 import Tile from "../components/Tile.vue"
 import GameOver from "../components/GameOver.vue"
-import { store } from "../store"
+import store from "../store"
 import { BOARD_SIZE } from "../constants"
 const { tiles } = store
 const blankTiles = BOARD_SIZE * BOARD_SIZE

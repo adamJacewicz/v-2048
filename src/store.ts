@@ -130,7 +130,7 @@ const isMergePossible = computed(() => {
     })
 })
 
-export const store = {
+export default {
   score: computed(() => state.score),
   best: computed(() => state.best),
   tiles: computed(() => state.tiles),

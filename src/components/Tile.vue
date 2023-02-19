@@ -1,5 +1,5 @@
 <template>
-  <div :style="position" :class="tileClasses" >
+  <div :style="position" :class="tileClasses">
     <div
       ref="tileInner"
       class="inner flex h-full items-center justify-center rounded-md"
@@ -41,11 +41,11 @@ const position = computed(() => {
   }
 })
 
-const runPopAnimation = () =>
+const runPopAnimation = () => {
   tileInner.value?.animate(popKeyframes, {
     duration: 200,
   })
-
+}
 watch(tileValue, runPopAnimation, { flush: "post" })
 </script>
 <style scoped lang="scss">

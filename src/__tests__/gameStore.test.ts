@@ -2,7 +2,7 @@ import { afterEach, expect } from "vitest"
 import { BOARD_SIZE, Direction } from "../constants"
 import { MaybeTile } from "../game.types"
 import { toCoordinates } from "../utils"
-import { store } from "../store"
+import store from "../store"
 
 const {
   tiles,
@@ -85,7 +85,7 @@ describe("Game store", () => {
 
   it("gameover when there is no available cells and no tiles to merge", () => {
     fillTiles(maxTiles)
-    tiles.value.map((tile, i) => (tile.value = i))
+    tiles.value.forEach((tile, i) => (tile.value = i))
     expect(isGameOver.value).toBe(true)
   })
 })
