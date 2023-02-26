@@ -27,7 +27,9 @@ describe("Tile", () => {
     expect(element.style.zIndex).toBe("2")
     expect(element.style.transform).toBe("translate(200%, 300%)")
 
-    await wrapper.setProps({tile: { x: 2, y: 3, value: 16, merged: false, id: "MOCKED-ID" }})
+    await wrapper.setProps({
+      tile: { x: 2, y: 3, value: 16, merged: false, id: "MOCKED-ID" },
+    })
     expect(wrapper.classes().includes("text-gray-100")).toBe(true)
     expect(element.style.zIndex).toBe("4")
     expect(inner.element.animate).toHaveBeenCalled()

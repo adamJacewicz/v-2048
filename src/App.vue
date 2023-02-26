@@ -11,27 +11,24 @@
 import Board from "components/Board.vue"
 import Header from "./components/Header.vue"
 import Manual from "./components/Manual.vue"
+import { useStore } from "./store"
 import { onBeforeMount } from "vue"
 import { onKeyStroke, useSwipe } from "@vueuse/core"
-import store from "./store"
 import { keyList } from "./constants"
 import { keyType } from "./game.types"
-const { isGameOver, tiles, move, initGame } = store
-
-const onSwipeEnd = (event: TouchEvent, direction: keyType): void => {
-  move(direction)
-}
-
-const onKeyDown = (event: KeyboardEvent): void => {
-  move(event.key)
-}
+const { move, initGame, isGameOver, tiles } = useStore()
 
 useSwipe(document, {
-  onSwipeEnd,
+  onSwipeEnd: (event: TouchEvent, direction: keyType): void => {
+    move(direction)
+  },
   threshold: 10,
 })
 
-onKeyStroke(keyList, onKeyDown)
+onKeyStroke(keyList, (event: KeyboardEvent): void => {
+  move(event.key)
+})
+
 onBeforeMount(() => {
   ;(isGameOver.value || tiles.value.length === 0) && initGame()
 })

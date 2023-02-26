@@ -2,7 +2,7 @@ import { afterEach, expect } from "vitest"
 import { BOARD_SIZE, Direction } from "../constants"
 import { MaybeTile } from "../game.types"
 import { toCoordinates } from "../utils"
-import store from "../store"
+import { useStore} from "../store"
 
 const {
   tiles,
@@ -10,20 +10,20 @@ const {
   best,
   availablePositions,
   isGameOver,
+  isMergePossible,
   addTile,
   removeMergedTiles,
   updateScore,
   reset,
   move,
-  createTile,
-} = store
+} = useStore()
 
 const maxTiles = BOARD_SIZE * BOARD_SIZE
 
 const fillTiles = (prop: Array<MaybeTile> | number = maxTiles) => {
   const arr =
     typeof prop === "number"
-      ? Array.from({ length: prop }, (_, i) => createTile(toCoordinates(i)))
+      ? Array.from({ length: prop }, (_, i) => toCoordinates(i))
       : prop
   arr.forEach(addTile)
 }
@@ -34,6 +34,8 @@ describe("Game store", () => {
   })
 
   it("update score", () => {
+    expect(score.value).toBe(0)
+    expect(best.value).toBe(0)
     updateScore(4)
     expect(score.value).toBe(4)
     expect(best.value).toBe(4)
@@ -86,6 +88,8 @@ describe("Game store", () => {
   it("gameover when there is no available cells and no tiles to merge", () => {
     fillTiles(maxTiles)
     tiles.value.forEach((tile, i) => (tile.value = i))
+    expect(availablePositions.value).toHaveLength(0)
+    expect(isMergePossible.value).toBe(false)
     expect(isGameOver.value).toBe(true)
   })
 })
