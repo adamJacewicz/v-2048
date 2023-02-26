@@ -5,7 +5,7 @@
       class="inner flex h-full items-center justify-center rounded-md"
       :class="backgroundClass"
     >
-      {{ props.tile.value }}
+      {{ tileValue }}
     </div>
   </div>
 </template>
@@ -30,7 +30,8 @@ const tileClasses = computed(() => [
 
 const backgroundClass = computed(() => {
   const exp = Math.log2(tileValue.value) % 11
-  return `bg-tile-${Math.pow(2, exp)}`
+  const value = Math.pow(2, exp)
+  return `bg-tile-${value}`
 })
 
 const position = computed(() => {

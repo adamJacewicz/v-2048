@@ -5,22 +5,19 @@ html {
   overscroll-behavior: contain;
   overflow: hidden;
   height: 100vh;
-}
-
-html {
   font-size: clamp(14px, 3vw, 16px);
 }
 
 .tile {
   @apply h-1/4 w-1/4 p-1 xs:p-1.5;
-  
+
   &-blank {
     position: relative;
     &:after {
-      @apply  m-1 xs:m-1.5 rounded-md bg-tile-blank;
-      content: '';
+      @apply m-1 rounded-md bg-tile-blank xs:m-1.5;
+      content: "";
       display: block;
-      top:0;
+      top: 0;
       left: 0;
       bottom: 0;
       right: 0;
