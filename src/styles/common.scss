@@ -1,0 +1,6 @@
+.tile {
+  @apply h-1/4 w-1/4 p-1 xs:p-1.5;
+  &-blank {
+    @apply m-1 h-[calc(25%_-_0.5rem)] w-[calc(25%_-_0.5rem)] rounded-md bg-tile-blank xs:m-1.5 xs:h-[calc(25%_-_0.75rem)] xs:w-[calc(25%_-_0.75rem)];
+  }
+}

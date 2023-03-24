@@ -19,17 +19,11 @@ import { keyType } from "./game.types"
 const { move, initGame, isGameOver, tiles } = useStore()
 
 useSwipe(document, {
-  onSwipeEnd: (event: TouchEvent, direction: keyType): void => {
-    move(direction)
-  },
+  onSwipeEnd: (event: TouchEvent, direction: keyType): void => move(direction),
   threshold: 10,
 })
-
-onKeyStroke(keyList, (event: KeyboardEvent): void => {
-  move(event.key)
-})
-
-onBeforeMount(() => {
-  ;(isGameOver.value || tiles.value.length === 0) && initGame()
-})
+onKeyStroke(keyList, (event: KeyboardEvent): void => move(event.key))
+onBeforeMount(
+  () => (isGameOver.value || tiles.value.length === 0) && initGame()
+)
 </script>

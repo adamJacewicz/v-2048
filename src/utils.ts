@@ -1,23 +1,11 @@
-import { AxisType, keyType, Position, Tile } from "./game.types"
-import { Axis, BOARD_SIZE, movementOptions, Order } from "./constants"
+import { keyType, Position, Tile } from "./game.types"
+import { BOARD_SIZE, movementOptions } from "./constants"
 
 export const getRandomInteger = (min: number, max: number): number =>
   Math.floor(Math.random() * (max - min + 1)) + min
 
 export const getRandomItem = <T>(array: T[]): T | undefined => {
   if (array.length) return array[getRandomInteger(0, array.length - 1)]
-}
-export const groupBy = (array: Tile[], axis: AxisType) => {
-  const groupAxis = axis === Axis.X ? Axis.Y : Axis.X
-  return array
-    .reduce<Tile[][]>(
-      (result, tile) => {
-        result[tile[groupAxis]]?.push(tile)
-        return result
-      },
-      [[], [], [], []]
-    )
-    .map((row) => row.sort((a, b) => a[axis] - b[axis]))
 }
 
 export const mergeTiles = (source: Tile, target: Tile) => {
@@ -38,6 +26,8 @@ export const toCoordinates = (value: number) => ({
   y: Math.floor(value / BOARD_SIZE),
   x: value % BOARD_SIZE,
 })
+
+export const getTileOrder = ({ x, y }: Position) => x + BOARD_SIZE * y
 
 export const hasSamePosition = (a: Position, b: Position) =>
   a.x === b.x && a.y === b.y
@@ -63,3 +53,8 @@ export const hasProperties = <T extends {}>(
   object: T,
   ...keys: Array<string>
 ) => keys.every((key) => Object.hasOwn(object, key))
+
+export const allPositions = Array.from(
+  { length: BOARD_SIZE * BOARD_SIZE },
+  (_, i) => toCoordinates(i)
+)

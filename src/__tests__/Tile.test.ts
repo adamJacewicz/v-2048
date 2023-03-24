@@ -1,4 +1,4 @@
-import { mount, shallowMount } from "@vue/test-utils"
+import { shallowMount } from "@vue/test-utils"
 import { describe, expect } from "vitest"
 import Tile from "../components/Tile.vue"
 
