@@ -3,15 +3,16 @@ import { computed } from "vue"
 import {
   getRandomItem,
   hasSamePosition,
-  groupBy,
   generateId,
   getMovementOptions,
   inRange,
   getRandomInteger,
   hasProperties,
   mergeTiles,
+  getTileOrder,
+  allPositions,
 } from "./utils"
-import { allPositions, Axis, BOARD_SIZE, Order } from "./constants"
+import { Axis, BOARD_SIZE, Order } from "./constants"
 import { createGlobalState, toReactive, useStorage } from "@vueuse/core"
 
 export const createTile = ({ value, merged, id, x, y }: Partial<Tile>) => ({
@@ -115,12 +116,10 @@ export const useStore = createGlobalState(() => {
     allPositions.filter((coords) => isValidPosition(coords))
   )
 
-  const isMergePossible = computed(() => {
-    return groupBy(
-      state.tiles.filter((items) => !items.merged),
-      Axis.X
-    )
-      .flat()
+  const isMergePossible = computed(() =>
+    state.tiles
+      .filter((items) => !items.merged)
+      .sort((a, b) => getTileOrder(a) - getTileOrder(b))
       .some((tile, i, arr) => {
         const nextTile = arr.slice(i + 1).find(({ y }) => y === tile.y)
         const bottomTile = arr
@@ -131,7 +130,7 @@ export const useStore = createGlobalState(() => {
           (bottomTile && bottomTile.value === tile.value)
         )
       })
-  })
+  )
 
   return {
     score: computed(() => state.score),

@@ -2,8 +2,7 @@
   <div :style="position" :class="tileClasses">
     <div
       ref="tileInner"
-      class="inner flex h-full items-center justify-center rounded-md"
-      :class="backgroundClass"
+      :class="innerClasses"
     >
       {{ tileValue }}
     </div>
@@ -23,15 +22,23 @@ const tileClasses = computed(() => [
   "tile",
   "absolute",
   "text-4xl",
-  "sm:text-5xl",
+  "xs:text-5xl",
   "font-bold",
   "duration-200",
 ])
 
-const backgroundClass = computed(() => {
+const innerClasses = computed(() => {
   const exp = Math.log2(tileValue.value) % 11
   const value = Math.pow(2, exp)
-  return `bg-tile-${value}`
+  return [
+    `bg-tile-${value}`,
+    "inner",
+    "flex",
+    "h-full",
+    "items-center",
+    "justify-center",
+    "rounded-md",
+  ]
 })
 
 const position = computed(() => {

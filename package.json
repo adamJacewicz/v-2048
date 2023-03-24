@@ -17,7 +17,7 @@
     "happy-dom": "^8.4.4",
     "jsdom": "^20.0.0",
     "vite-svg-loader": "^3.3.0",
-    "vitest": "^0.22.1",
+    "vitest": "^0.29.7",
     "vue": "^3.2.25"
   },
   "devDependencies": {
