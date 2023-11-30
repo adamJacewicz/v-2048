@@ -19,7 +19,9 @@ const tileValue = computed(() => props.tile.value)
 
 const tileClasses = computed(() => [
   tileValue.value < 8 ? "text-primary-800" : "text-gray-100",
-  "tile",
+  "w-1/4",
+  "h-1/4",
+  "p-1",
   "absolute",
   "text-4xl",
   "xs:text-5xl",

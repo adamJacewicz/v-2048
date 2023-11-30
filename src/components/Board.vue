@@ -1,10 +1,12 @@
 <template>
   <div
-    class="relative flex aspect-[1/1] flex-wrap overflow-hidden rounded-md bg-primary-500 p-1 xs:p-1.5"
+    class="relative aspect-[1/1] overflow-hidden rounded-md bg-primary-500 "
   >
     <GameOver v-if="isGameOver" />
-    <div class="tile tile-blank" :key="i" v-for="i in blankTiles" />
-    <div class="absolute top-0 left-0 right-0 bottom-0 m-1 xs:m-1.5">
+    <div class="grid grid-cols-4 grid-rows-4 w-full h-full p-1">
+      <div class="m-1 bg-tile-blank rounded-md" :key="i" v-for="i in blankTiles" />
+    </div>
+    <div class="absolute top-0 left-0 right-0 bottom-0 m-1">
       <Tile :tile="tile" :key="tile.id" v-for="tile in tiles" />
     </div>
   </div>
