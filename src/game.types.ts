@@ -30,12 +30,6 @@ export type AxisType = "x" | "y"
 export type direction = "Up" | "Down" | "Right" | "Left"
 export type keyType = (`Arrow${direction}` | Uppercase<direction> | "NONE") &
   keyof typeof SwipeDirection | string
-export type PropEventSource<Type> = {
-  on<Key extends string & keyof Type>(
-    eventName: `${Key}Changed`,
-    callback: (newValue: Type[Key]) => void
-  ): void
-}
 
 export type z<Type, Key extends string & keyof Type> = (
   eventName: `${Key}Changed`,
