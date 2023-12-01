@@ -1,12 +1,12 @@
 import Stats from "../components/Stats.vue"
-import { DOMWrapper, mount, MountingOptions } from "@vue/test-utils"
+import { ComponentMountingOptions, DOMWrapper, mount, MountingOptions } from "@vue/test-utils"
 import { describe, expect } from "vitest"
 import { useStore } from "../store"
 
 vi.mock("../utils.ts", async () => await vi.importActual("../utils.ts"))
 vi.mock("../constants.ts", async () => await vi.importActual("../constants.ts"))
 
-const mountStatsElement = (options: MountingOptions<{}> = {}) => {
+const mountStatsElement = (options: ComponentMountingOptions<{}> = {}) => {
   const wrapper = mount(Stats, options)
   const [scoreEl, bestEl] = wrapper.findAll("h5 + p")
   const elementTextIsEqual =
