@@ -23,14 +23,14 @@ describe("Tile", () => {
     const inner = wrapper.find(".inner")
     inner.element.animate = vi.fn()
 
-    expect(wrapper.classes().includes("text-primary-800")).toBe(true)
+    expect(inner.classes()).toContain("text-primary-800")
     expect(element.style.zIndex).toBe("2")
     expect(element.style.transform).toBe("translate(200%, 300%)")
 
     await wrapper.setProps({
       tile: { x: 2, y: 3, value: 16, merged: false, id: "MOCKED-ID" },
     })
-    expect(wrapper.classes().includes("text-gray-100")).toBe(true)
+    expect(inner.classes()).toContain("text-gray-100")
     expect(element.style.zIndex).toBe("4")
     expect(inner.element.animate).toHaveBeenCalled()
   })

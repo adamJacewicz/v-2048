@@ -2,7 +2,7 @@ import { afterEach, expect } from "vitest"
 import { BOARD_SIZE, Direction } from "../constants"
 import { MaybeTile } from "../game.types"
 import { toCoordinates } from "../utils"
-import { useStore} from "../store"
+import { useStore} from "../use-game"
 
 const {
   tiles,
