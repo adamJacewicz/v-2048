@@ -49,12 +49,16 @@ export const inRange = <T extends number | Date | string>(
   return end === undefined ? n >= 0 && n < start : n >= start && n < end
 }
 
-export const hasProperties = <T extends {}>(
-  object: T,
-  ...keys: Array<string>
-) => keys.every((key) => Object.hasOwn(object, key))
-
-export const allPositions = Array.from(
+export const board = Array.from(
   { length: BOARD_SIZE * BOARD_SIZE },
   (_, i) => toCoordinates(i)
 )
+
+export const createTile = ({ value, merged, id, x, y }: Partial<Tile>) => ({
+  value: value ?? (Math.random() < 0.8 ? 2 : 4),
+  merged: merged ?? false,
+  id: id ?? generateId(),
+  x: x ?? getRandomInteger(0, BOARD_SIZE - 1),
+  y: y ?? getRandomInteger(0, BOARD_SIZE - 1)
+})
+
