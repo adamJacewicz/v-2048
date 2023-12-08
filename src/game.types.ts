@@ -1,6 +1,6 @@
 import { Order } from "./constants"
 import { SwipeDirection } from "@vueuse/core"
-import { useStore } from "./use-game"
+import { useGame } from "./use-game"
 
 export type MaybeTile = Partial<Tile> & Position
 
@@ -29,4 +29,4 @@ export type keyType = (`Arrow${direction}` | Uppercase<direction> | "NONE") &
 
 
 
-export type GameStore = ReturnType<typeof useStore>
+export type GameStore = ReturnType<typeof useGame>

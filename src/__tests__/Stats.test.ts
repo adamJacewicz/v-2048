@@ -1,7 +1,7 @@
 import Stats from "../components/Stats.vue"
 import { ComponentMountingOptions, DOMWrapper, mount } from "@vue/test-utils"
 import { describe, expect } from "vitest"
-import { useStore } from "../use-game"
+import { useGame } from "../use-game"
 
 vi.mock("../utils.ts", async () => await vi.importActual("../utils.ts"))
 vi.mock("../constants.ts", async () => await vi.importActual("../constants.ts"))
@@ -25,7 +25,7 @@ const mountStatsElement = (options: ComponentMountingOptions<{}> = {}) => {
 }
 
 describe("Stats", () => {
-	const game = useStore()
+	const game = useGame()
 
 	afterEach(() => {
 		game.reset()
