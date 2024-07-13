@@ -1,60 +1,52 @@
 import Stats from "../components/Stats.vue"
-import { ComponentMountingOptions, DOMWrapper, mount } from "@vue/test-utils"
-import { describe, expect } from "vitest"
-import { useGame } from "../use-game"
+import { DOMWrapper, mount, VueWrapper } from "@vue/test-utils"
+import { beforeEach, describe, expect } from "vitest"
+import { useStore } from "../store"
 
 vi.mock("../utils.ts", async () => await vi.importActual("../utils.ts"))
 vi.mock("../constants.ts", async () => await vi.importActual("../constants.ts"))
 
-const mountStatsElement = (options: ComponentMountingOptions<{}> = {}) => {
-	const wrapper = mount(Stats, options)
-	const [scoreEl, bestEl] = wrapper.findAll("h5 + p")
-	const elementTextIsEqual =
-		(element: DOMWrapper<Element>) => (value: string) =>
-			expect(element.text()).toBe(value)
-
-	return {
-		assert: {
-			scoreToBe: elementTextIsEqual(scoreEl),
-			bestScoreToBe: elementTextIsEqual(bestEl)
-		},
-		act: {
-			newGame: async () => await wrapper.find("button").trigger("click")
-		}
-	}
-}
-
 describe("Stats", () => {
-	const game = useGame()
+  const { updateScore, reset } = useStore()
 
-	afterEach(() => {
-		game.reset()
-		vi.clearAllMocks()
-		vi.clearAllTimers()
-	})
+  let wrapper: VueWrapper<{}>
+  let scoreEl: DOMWrapper<HTMLDivElement>
+  let newGameButton: DOMWrapper<HTMLButtonElement>
+  let bestEl: DOMWrapper<HTMLDivElement>
 
-	beforeEach(() => {
-		vi.useFakeTimers()
-	})
+  afterEach(() => {
+    reset()
+    vi.clearAllMocks()
+    vi.clearAllTimers()
+  })
 
-	it("component displays proper values", async () => {
-		const { assert } = mountStatsElement({ global: { provide: { "game": game } } })
-		assert.scoreToBe("0")
-		assert.bestScoreToBe("0")
-		game.updateScore(8)
-		await vi.advanceTimersByTimeAsync(100)
-		assert.scoreToBe("8")
-		assert.bestScoreToBe("8")
-	})
+  beforeEach(() => {
+    wrapper = mount(Stats)
+    newGameButton = wrapper.find("#new-game")
+    scoreEl = wrapper.find("#score")
+    bestEl = wrapper.find("#best")
+    vi.useFakeTimers()
+  })
 
-	it("new game button resets current score", async () => {
-		game.updateScore(8)
-		const { assert, act } = mountStatsElement({ global: { provide: { "game": game } } })
-		assert.scoreToBe("8")
-		assert.bestScoreToBe("8")
-		await act.newGame()
-		await vi.advanceTimersByTimeAsync(100)
-		assert.scoreToBe("0")
-		assert.bestScoreToBe("8")
-	})
+  it("component displays proper values", async () => {
+    expect(scoreEl.text()).toContain("SCORE")
+    expect(bestEl.text()).toContain("BEST")
+    expect(scoreEl.text()).toContain("0")
+    expect(bestEl.text()).toContain("0")
+    updateScore(8)
+    await vi.advanceTimersByTimeAsync(150)
+    expect(scoreEl.text()).toContain("8")
+    expect(bestEl.text()).toContain("8")
+  })
+
+  it("new game button resets current score", async () => {
+    updateScore(8)
+    await vi.advanceTimersByTimeAsync(150)
+    expect(scoreEl.text()).toContain("8")
+    expect(bestEl.text()).toContain("8")
+    await newGameButton.trigger("click")
+    await vi.advanceTimersByTimeAsync(150)
+    expect(scoreEl.text()).toContain("0")
+    expect(bestEl.text()).toContain("8")
+  })
 })

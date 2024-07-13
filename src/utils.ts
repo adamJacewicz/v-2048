@@ -1,4 +1,4 @@
-import { keyType, Position, Tile } from "./game.types"
+import { AxisType, keyType, Position, Tile } from "./types"
 import { BOARD_SIZE, movementOptions } from "./constants"
 
 export const getRandomInteger = (min: number, max: number): number =>
@@ -14,20 +14,19 @@ export const mergeTiles = (source: Tile, target: Tile) => {
   source.merged = true
   target.value *= 2
 }
-
 export const getMovementOptions = (key: keyType) => {
-  const direction = Object.keys(movementOptions).find((k) =>
-    key.toUpperCase().includes(k)
+  const direction = Object.keys(movementOptions).find((directionKey) =>
+    key.toUpperCase().includes(directionKey)
   ) as keyof typeof movementOptions
   return movementOptions[direction]
 }
 
-export const toCoordinates = (value: number) => ({
+export const getCoordinates = (value: number) => ({
   y: Math.floor(value / BOARD_SIZE),
   x: value % BOARD_SIZE,
 })
 
-export const getTileOrder = ({ x, y }: Position) => x + BOARD_SIZE * y
+export const getCellIndex = ({ x, y }: Position) => x + BOARD_SIZE * y
 
 export const hasSamePosition = (a: Position, b: Position) =>
   a.x === b.x && a.y === b.y
@@ -41,24 +40,48 @@ export const generateId = () =>
   )
 
 export const inRange = <T extends number | Date | string>(
-  n: T,
+  value: T,
   start: T,
-  end?: T
+  end: T
 ) => {
-  if (end && start > end) [end, start] = [start, end]
-  return end === undefined ? n >= 0 && n < start : n >= start && n < end
+  if (start > end) [end, start] = [start, end]
+  return value >= start && value < end
 }
 
-export const board = Array.from(
+export const hasProperties = <T extends {}>(
+  object: T,
+  ...keys: Array<string>
+) => keys.every((key) => Object.hasOwn(object, key))
+
+export const allPositions = Array.from(
   { length: BOARD_SIZE * BOARD_SIZE },
-  (_, i) => toCoordinates(i)
+  (_, i) => getCoordinates(i)
 )
 
-export const createTile = ({ value, merged, id, x, y }: Partial<Tile>) => ({
-  value: value ?? (Math.random() < 0.8 ? 2 : 4),
-  merged: merged ?? false,
-  id: id ?? generateId(),
-  x: x ?? getRandomInteger(0, BOARD_SIZE - 1),
-  y: y ?? getRandomInteger(0, BOARD_SIZE - 1)
+export const generateTranslationClass = (axis: AxisType, value: number) => {
+  if (value === 0) return ""
+  if (value === 1) return `translate-${axis}-full`
+  return `translate-${axis}-${value}x-full`
+}
+
+export const createTile = ({
+  value = Math.random() < 0.8 ? 2 : 4,
+  merged = false,
+  id = generateId(),
+  x = getRandomInteger(0, BOARD_SIZE - 1),
+  y = getRandomInteger(0, BOARD_SIZE - 1),
+}: Partial<Tile>) => ({
+  value,
+  merged,
+  id,
+  x,
+  y,
 })
 
+export const isPositionExists = (position: Position, tiles: Tile[]) =>
+  tiles.some((tile) => hasSamePosition(tile, position))
+
+export const isValidPosition = (position: Position) =>
+  hasProperties(position, "x", "y") &&
+  inRange(position.x, 0, BOARD_SIZE) &&
+  inRange(position.y, 0, BOARD_SIZE)
