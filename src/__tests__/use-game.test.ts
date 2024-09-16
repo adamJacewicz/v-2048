@@ -1,6 +1,6 @@
 import { beforeEach, expect } from "vitest"
 import { BOARD_SIZE } from "../constants"
-import { allPositions, getCoordinates } from "../utils"
+import { allPositions } from "../utils"
 import { useGame } from "../use-game"
 import { mount } from "@vue/test-utils"
 import Board from "../components/Board.vue"
@@ -21,7 +21,7 @@ const {
 	move
 } = useGame()
 
-describe("Game store", () => {
+describe("Game state", () => {
 	beforeEach(() => {
 		reset()
 	})
@@ -34,7 +34,7 @@ describe("Game store", () => {
 		expect(best.value).toBe(4)
 	})
 
-	it("adds tile", () => {
+	it("add tile", () => {
 		const newTiles = [
 			{ x: 3, y: 3, value: 8, merged: false, id: "MOCKED-ID-0" },
 			{ x: 2, y: 3, value: 16, merged: true, id: "MOCKED-ID-1" }
@@ -44,8 +44,8 @@ describe("Game store", () => {
 	})
 
 	it("prevent from adding tile when there is no free cells", () => {
-		const coordinates = Array.from({ length: 21 }, (_, i) => getCoordinates(i))
-		coordinates.forEach(addTile)
+		allPositions.forEach(addTile)
+		addTile({ x: 7, y: 7, value: 4 })
 		expect(tiles.value).toHaveLength(BOARD_SIZE ** 2)
 		expect(availablePositions.value).toHaveLength(0)
 	})
@@ -66,7 +66,17 @@ describe("Game store", () => {
 
 		initial.forEach(addTile)
 		move("down")
-		expect(result).toMatchObject(tiles.value)
+		expect(tiles.value).toMatchObject(result)
+		reset()
+		initial.forEach(addTile)
+		move("up")
+		expect(tiles.value).toMatchObject([
+				{ value: 4, merged: false, id: "MOCKED-ID-0", x: 2, y: 0 },
+				{ value: 2, merged: true, id: "MOCKED-ID-1", x: 2, y: 0 },
+				{ value: 8, merged: false, id: "MOCKED-ID-2", x: 1, y: 0 },
+				{ value: 4, merged: true, id: "MOCKED-ID-3", x: 1, y: 0 }
+			]
+		)
 	})
 
 	it("remove merged tiles", () => {
@@ -83,7 +93,7 @@ describe("Game store", () => {
 
 	it("gameover when there is no available cells and no tiles to merge", async () => {
 		const wrapper = mount(Board)
-		allPositions.forEach((tile, i) => addTile({...tile, value: i}))
+		allPositions.forEach((tile, i) => addTile({ ...tile, value: i }))
 		await nextTick()
 		expect(availablePositions.value).toHaveLength(0)
 		expect(isMergePossible.value).toBe(false)

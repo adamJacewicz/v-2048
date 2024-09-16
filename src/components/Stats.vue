@@ -29,10 +29,7 @@ import { useGame } from "../use-game"
 
 const { score, best, initGame } = useGame()
 
-const scores = computed(() => [score.value, best.value])
-
-
-const scoresTransition = useTransition(scores, {
+const scoresTransition = useTransition([score, best], {
   duration: 100
 })
 

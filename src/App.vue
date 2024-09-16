@@ -24,7 +24,7 @@ const onMove = (direction: MoveKeyType) => {
 }
 
 useSwipe(document, {
-  onSwipeEnd: (_event, direction) => onMove(direction),
+  onSwipeEnd: (_ev, direction) => onMove(direction),
   threshold: 10
 })
 

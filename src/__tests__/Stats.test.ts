@@ -13,7 +13,6 @@ describe("Stats", () => {
   let wrapper: VueWrapper
   let listEl: DOMWrapper<HTMLUListElement>
   let newGameButton: VueWrapper
-  let bestEl: DOMWrapper<HTMLDivElement>
 
   afterEach(() => {
     reset()

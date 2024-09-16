@@ -1,16 +1,18 @@
 import { describe, expect } from "vitest"
 import {
-	generateTranslationClass,
-	hasProperties,
-	isInRange,
-	getCoordinates,
-	getCellIndex,
-	hasSamePosition,
-	mergeTiles,
 	createTile,
+	findNeighbours,
+	generateTranslationClass,
+	getCellIndex,
+	getCoordinates,
 	getRandomInteger,
 	getRandomItem,
-	isPositionExists, isValidPosition
+	hasProperties,
+	hasSamePosition,
+	isInRange,
+	isPositionExists,
+	isValidPosition,
+	mergeTiles, normalizeDirection
 } from "../utils"
 import { Axis } from "../constants"
 
@@ -35,7 +37,7 @@ describe("generateTranslationClass", () => {
 	})
 })
 
-describe("inRange", () => {
+describe("isInRange", () => {
 	it("returns false if value is not in range", () => {
 		expect(isInRange(2, 3, 5)).toBe(false)
 		expect(isInRange(5, 4, 5)).toBe(false)
@@ -131,5 +133,47 @@ describe("isValidPosition", () => {
 		expect(isValidPosition({ x: 3, y: 3 }, array)).toBe(true)
 		expect(isValidPosition({ x: 1, y: 3 }, array)).toBe(false)
 		expect(isValidPosition({ x: 6, y: 0 }, array)).toBe(false)
+	})
+})
+
+describe("findNeighbours", () => {
+	const array = [
+		{ x: 2, y: 2, value: 2, merged: false, id: "MOCKED-ID-0" },
+		{ x: 2, y: 3, value: 2, merged: false, id: "MOCKED-ID-1" },
+		{ x: 1, y: 0, value: 4, merged: false, id: "MOCKED-ID-2" },
+		{ x: 3, y: 2, value: 4, merged: false, id: "MOCKED-ID-3" },
+		{ x: 3, y: 1, value: 4, merged: false, id: "MOCKED-ID-5" },
+		{ x: 1, y: 3, value: 4, merged: false, id: "MOCKED-ID-6" },
+		{ x: 6, y: 0, value: 4, merged: false, id: "MOCKED-ID-7" },
+		{ x: 3, y: 0, value: 4, merged: false, id: "MOCKED-ID-4" }
+	]
+
+	it("should return closest neighbours", () => {
+		expect(findNeighbours(array, { x: 3, y: 1, merged: false, id: "MOCKED-ID-5", value: 4 }, Axis.X)).toMatchObject([{
+			x: 3,
+			y: 2,
+			value: 4,
+			merged: false,
+			id: "MOCKED-ID-3"
+		},
+			{ x: 3, y: 0, value: 4, merged: false, id: "MOCKED-ID-4" }
+		])
+		expect(findNeighbours(array, { x: 1, y: 3, merged: false, id: "MOCKED-ID-6", value: 4 }, Axis.X)).toMatchObject([{
+			x: 1,
+			y: 0,
+			value: 4,
+			merged: false,
+			id: "MOCKED-ID-2"
+		}])
+		expect(findNeighbours(array, { x: 6, y: 0, merged: false, id: "MOCKED-ID-7", value: 4 }, Axis.X)).toMatchObject([])
+	})
+})
+
+describe("normalizeDirection", () => {
+	it("should normalize key", () => {
+		expect(normalizeDirection("ArrowDown")).toBe("DOWN")
+		expect(normalizeDirection("up")).toBe("UP")
+		expect(normalizeDirection("right")).toBe("RIGHT")
+		expect(normalizeDirection("ArrowLeft")).toBe("LEFT")
 	})
 })
