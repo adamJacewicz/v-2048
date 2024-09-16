@@ -1,40 +1,45 @@
 <template>
-  <div class="flex flex-col gap-2">
-    <div class="flex gap-1 xs:gap-2">
-      <div
+  <section class="flex-1">
+    <ul class="flex gap-2 justify-end">
+      <li
         v-for="item in stats"
         :key="item.label"
         :id="item.label"
-        class="min-w-[min(50%,65px)] flex-1 rounded-sm bg-primary-500 p-2 text-center font-bold"
+        class="min-w-[min(50%,130px)]  rounded-md bg-accent-500 p-2 text-center font-bold "
       >
-        <h5 class="text-sm text-primary-800">{{ item.label.toUpperCase() }}</h5>
-        <p class="text-lg leading-6 text-primary-50">
+        <h5 class="text-sm text-accent-900 uppercase">{{ item.label }}</h5>
+        <p class="text-lg leading-6 text-accent-50">
           {{ item.value }}
         </p>
-      </div>
-    </div>
-    <AppButton id="new-game" class="self-end font-medium" @click="initGame">
+      </li>
+    </ul>
+    <AppButton
+      class="mt-2 block ml-auto"
+      @click="initGame">
       New game
     </AppButton>
-  </div>
+  </section>
 </template>
-<script setup lang="ts">
-import { computed, reactive } from "vue"
+<script setup
+        lang="ts">
+import { computed } from "vue"
 import { useTransition } from "@vueuse/core"
-import { useStore } from "../store"
 import AppButton from "./AppButton.vue"
+import { useGame } from "../use-game"
 
-const { score, best, initGame } = useStore()
-const scores = reactive([score, best])
+const { score, best, initGame } = useGame()
+
+const scores = computed(() => [score.value, best.value])
+
 
 const scoresTransition = useTransition(scores, {
-  duration: 100,
+  duration: 100
 })
 
 const stats = computed(() =>
   ["score", "best"].map((label, i) => ({
     label,
-    value: scoresTransition.value[i].toFixed(0),
+    value: scoresTransition.value[i].toFixed(0)
   }))
 )
 </script>

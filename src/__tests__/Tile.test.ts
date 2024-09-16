@@ -19,13 +19,13 @@ describe("Tile", () => {
 		const inner = wrapper.find(".inner")
 		inner.element.animate = vi.fn()
 
-		expect(wrapper.classes().includes("text-primary-800")).toBe(true)
+		expect(wrapper.classes().includes("text-accent-800")).toBe(true)
 		expect(wrapper.classes().includes("translate-x-2x-full")).toBe(true)
 		expect(wrapper.classes().includes("translate-y-3x-full")).toBe(true)
 		expect(element.style.zIndex).toBe("2")
 
 		await wrapper.setProps({ x: 2, y: 3, value: 16, merged: false, id: "MOCKED-ID" })
-		expect(wrapper.classes().includes("text-gray-100")).toBe(true)
+		expect(wrapper.classes().includes("text-accent-50")).toBe(true)
 		expect(element.style.zIndex).toBe("4")
 		expect(inner.element.animate).toHaveBeenCalled()
 	})

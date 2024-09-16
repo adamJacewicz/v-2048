@@ -1,5 +1,5 @@
 <template>
-  <p class="text-lg text-primary-800">
+  <p class="text-lg text-accent-800">
     <span class="font-bold">HOW TO PLAY:</span> Use your
     <span class="font-bold">arrow keys</span> or
     <span class="font-bold">swipe</span> to move the tiles. When two tiles

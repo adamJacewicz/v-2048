@@ -1,5 +1,5 @@
 module.exports = {
-	content: ["./src/**/*.{vue,js,ts,jsx,tsx}"],
+	content: ["./src/**/*.{vue,js,ts,jsx,tsx}", "./index.html"],
 	safelist: [
 		{
 			pattern: /^grid-(rows|cols)-([1-6])/
@@ -32,17 +32,18 @@ module.exports = {
 				16: "3.5rem"
 			},
 			colors: {
-				primary: {
-					50: "#fbfbfa",
-					100: "#f8f6f4",
-					200: "#ede9e5",
-					300: "#e3dcd5",
-					400: "#cdc1b5",
-					500: "#b8a795",
-					600: "#a69686",
-					700: "#8a7d70",
-					800: "#6e6459",
-					900: "#5a5249"
+				accent: {
+					50: "rgb(250 249 248)",
+					100: "rgb(239 236 233)",
+					200: "rgb(227 221 216)",
+					300: "rgb(213 205 198)",
+					400: "rgb(196 184 174)",
+					500: "rgb(173 157 143)",
+					600: "rgb(143 130 118)",
+					700: "rgb(117 106 97)",
+					800: "rgb(97 88 80)",
+					900: "rgb(68 62 57)",
+					950: "rgb(42 38 35)",
 				},
 				tile: {
 					0: "#D1C6BA",
