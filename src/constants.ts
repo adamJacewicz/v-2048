@@ -1,4 +1,4 @@
-import { ArrowKeyType, DirectionType, MovementOptions } from "./types"
+import { ArrowKeyType, Direction, MovementOptions } from "./types"
 
 export enum Order {
 	ASC = 1,
@@ -10,29 +10,23 @@ export enum Axis {
 	Y = "y"
 }
 
-export enum Direction {
-	UP = "UP",
-	DOWN = "DOWN",
-	LEFT = "LEFT",
-	RIGHT = "RIGHT",
-}
 
-export const keys: Record<Lowercase<DirectionType>, ArrowKeyType> = {
-	up: "ArrowUp",
-	down: "ArrowDown",
-	left: "ArrowLeft",
-	right: "ArrowRight"
+export const keysMap: Record<Direction, ArrowKeyType> = {
+	UP: "ArrowUp",
+	DOWN: "ArrowDown",
+	LEFT: "ArrowLeft",
+	RIGHT: "ArrowRight"
 } as const
 
 
-export const movementOptions: Record<DirectionType, MovementOptions> = {
-	[Direction.UP]: { axis: Axis.Y, order: Order.ASC },
-	[Direction.DOWN]: { axis: Axis.Y, order: Order.DESC },
-	[Direction.LEFT]: { axis: Axis.X, order: Order.ASC },
-	[Direction.RIGHT]: { axis: Axis.X, order: Order.DESC }
+export const movementOptions: Record<Direction, MovementOptions> = {
+	UP: { axis: Axis.Y, order: Order.ASC },
+	DOWN: { axis: Axis.Y, order: Order.DESC },
+	LEFT: { axis: Axis.X, order: Order.ASC },
+	RIGHT: { axis: Axis.X, order: Order.DESC }
 }
 
-export const arrowKeyList = [keys.right, keys.down, keys.left, keys.up]
+export const arrowKeyList = Object.values(keysMap)
 
 export const popKeyframes = [
 	{ transform: "scale(1)" },

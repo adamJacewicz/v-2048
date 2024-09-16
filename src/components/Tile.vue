@@ -2,12 +2,12 @@
   <div
     :style="tileStyles"
     :class="tileClasses"
-    class="xs:p-1.5 p-1 text-4xl xs:text-5xl ww font-bold duration-200 absolute"
+    class="xs:p-1.5 p-1 text-4xl xs:text-5xl font-bold duration-200 absolute"
   >
     <div
       ref="tileInnerRef"
       :class="backgroundClass"
-      class="inner flex-col flex h-full items-center justify-center rounded-sm"
+      class="inner flex-col flex h-full items-center justify-center rounded-md"
     >
       {{ value }}
     </div>
@@ -26,7 +26,7 @@ const props = defineProps<Tile>()
 
 const tileClasses = computed(() => {
     return [
-      props.value < 8 ? "text-primary-800" : "text-gray-100",
+      props.value < 8 ? "text-accent-800" : "text-accent-50",
       Object.values(Axis).map(axis => generateTranslationClass(axis, props[axis])),
       `w-1/${BOARD_SIZE} h-1/${BOARD_SIZE}`
     ]
@@ -46,7 +46,6 @@ const tileStyles = computed(() => ({
 ))
 
 watch(() => props.value, () => {
-
   tileInnerRef.value?.animate(popKeyframes, {
     duration: 200
   })

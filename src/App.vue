@@ -1,35 +1,33 @@
 <template>
-  <div class="flex h-full items-center justify-center bg-primary-200">
-    <div class="xs:max-w-xl max-w-xs flex flex-col gap-4">
-      <Header />
-      <Board />
-      <Manual />
-    </div>
+  <div class="xs:max-w-lg max-w-xs flex flex-col gap-4">
+    <Header />
+    <Board />
+    <Manual />
   </div>
 </template>
-<script setup lang="ts">
+<script setup
+        lang="ts">
 import Board from "./components/Board.vue"
 import Header from "./components/Header.vue"
 import Manual from "./components/Manual.vue"
-import { useStore } from "./store"
-import { onBeforeMount } from "vue"
+import { useGame } from "./use-game"
 import { onKeyStroke, useSwipe } from "@vueuse/core"
-import { keyType } from "./types"
+import { MoveKeyType } from "./types"
 import { arrowKeyList } from "./constants"
-const { move, initGame, isGameOver, tiles, addTile, updateScore } = useStore()
 
-const onMove = (direction: keyType) => {
+const { move, addTile, updateScore } = useGame()
+
+const onMove = (direction: MoveKeyType) => {
   const { isUpdated, score } = move(direction)
   updateScore(score)
   isUpdated && addTile()
 }
 
 useSwipe(document, {
-  onSwipeEnd: (_event: TouchEvent, direction: keyType): void => onMove(direction),
-  threshold: 10,
+  onSwipeEnd: (_event, direction) => onMove(direction),
+  threshold: 10
 })
-onKeyStroke(arrowKeyList, (event: KeyboardEvent): void => onMove(event.key))
-onBeforeMount(
-  () => (isGameOver.value || tiles.value.length === 0) && initGame()
-)
+
+onKeyStroke(arrowKeyList, (event) => onMove(event.key as MoveKeyType))
+
 </script>
