@@ -19,8 +19,8 @@
   </div>
 </template>
 <script setup lang="ts">
-import Tile from "../components/Tile.vue"
-import GameOver from "../components/GameOver.vue"
+import Tile from "components/Tile.vue"
+import GameOver from "components/GameOver.vue"
 import { useGame } from "../use-game"
 import { BOARD_SIZE } from "../constants"
 

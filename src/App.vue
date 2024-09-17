@@ -7,9 +7,9 @@
 </template>
 <script setup
         lang="ts">
-import Board from "./components/Board.vue"
-import Header from "./components/Header.vue"
-import Manual from "./components/Manual.vue"
+import Board from "components/Board.vue"
+import Header from "components/Header.vue"
+import Manual from "components/Manual.vue"
 import { useGame } from "./use-game"
 import { onKeyStroke, useSwipe } from "@vueuse/core"
 import { MoveKeyType } from "./types"

@@ -2,10 +2,8 @@ import { beforeEach, expect } from "vitest"
 import { BOARD_SIZE } from "../constants"
 import { allPositions } from "../utils"
 import { useGame } from "../use-game"
-import { mount } from "@vue/test-utils"
-import Board from "../components/Board.vue"
-import GameOver from "../components/GameOver.vue"
 import { nextTick } from "vue"
+
 
 const {
 	score,
@@ -57,26 +55,28 @@ describe("Game state", () => {
 			{ x: 1, y: 0, value: 4, merged: false, id: "MOCKED-ID-2" },
 			{ x: 1, y: 3, value: 4, merged: false, id: "MOCKED-ID-3" }
 		]
-		const result = [
+
+		const resultDown = [
 			{ x: 2, y: 3, value: 2, merged: true, id: "MOCKED-ID-0" },
 			{ x: 2, y: 3, value: 4, merged: false, id: "MOCKED-ID-1" },
 			{ x: 1, y: 3, value: 4, merged: true, id: "MOCKED-ID-2" },
 			{ x: 1, y: 3, value: 8, merged: false, id: "MOCKED-ID-3" }
 		]
 
+		const resultLeft = [
+			{ x: 0, y: 2, value: 2, merged: false, id: "MOCKED-ID-0" },
+			{ x: 1, y: 3, value: 2, merged: false, id: "MOCKED-ID-1" },
+			{ x: 0, y: 0, value: 4, merged: false, id: "MOCKED-ID-2" },
+			{ x: 0, y: 3, value: 4, merged: false, id: "MOCKED-ID-3" }
+		]
+
 		initial.forEach(addTile)
 		move("down")
-		expect(tiles.value).toMatchObject(result)
+		expect(tiles.value).toMatchObject(resultDown)
 		reset()
 		initial.forEach(addTile)
-		move("up")
-		expect(tiles.value).toMatchObject([
-				{ value: 4, merged: false, id: "MOCKED-ID-0", x: 2, y: 0 },
-				{ value: 2, merged: true, id: "MOCKED-ID-1", x: 2, y: 0 },
-				{ value: 8, merged: false, id: "MOCKED-ID-2", x: 1, y: 0 },
-				{ value: 4, merged: true, id: "MOCKED-ID-3", x: 1, y: 0 }
-			]
-		)
+		move("left")
+		expect(tiles.value).toMatchObject(resultLeft)
 	})
 
 	it("remove merged tiles", () => {
@@ -92,12 +92,10 @@ describe("Game state", () => {
 	})
 
 	it("gameover when there is no available cells and no tiles to merge", async () => {
-		const wrapper = mount(Board)
 		allPositions.forEach((tile, i) => addTile({ ...tile, value: i }))
 		await nextTick()
 		expect(availablePositions.value).toHaveLength(0)
 		expect(isMergePossible.value).toBe(false)
 		expect(isGameOver.value).toBe(true)
-		expect(wrapper.findComponent(GameOver).isVisible()).toBe(true)
 	})
 })

@@ -60,14 +60,17 @@ describe("hasProperties", () => {
 	})
 
 	it("returns true if all passed properties exists", () => {
-		expect(hasProperties(object, "x", "mockedProperty")).toBe(true)
+		expect(hasProperties(object, "x", "mockedProperty", "y")).toBe(true)
 	})
 })
 
 describe("getCoordinates and getCellIndex", () => {
-	it("getCoordinates converts a cell number into its coordinates and getCellIndex does opposite", () => {
+	it("getCoordinates converts a cell number into its coordinates", () => {
 		expect(getCoordinates(7)).toEqual({ x: 3, y: 1 })
 		expect(getCoordinates(15)).toEqual({ x: 3, y: 3 })
+	})
+
+	it("getCellIndex converts coordinates into number", () => {
 		expect(getCellIndex({ x: 3, y: 1 })).toEqual(7)
 		expect(getCellIndex({ x: 3, y: 3 })).toEqual(15)
 	})
@@ -115,8 +118,7 @@ describe("isPositionExists", () => {
 	it("should return true if element with given position already exists, otherwise return false", () => {
 		const position1 = { x: 1, y: 3 }
 		const position2 = { x: 0, y: 3 }
-		const array = [position1, position2]
-		expect(isPositionExists(position1, array)).toBe(true)
+		expect(isPositionExists(position1, [position1, position2])).toBe(true)
 		expect(isPositionExists(position2, [position1])).toBe(false)
 	})
 })

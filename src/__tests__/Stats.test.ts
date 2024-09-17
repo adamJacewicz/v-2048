@@ -1,11 +1,9 @@
 import Stats from "../components/Stats.vue"
-import { DOMWrapper, mount, VueWrapper } from "@vue/test-utils"
+import { DOMWrapper, shallowMount, VueWrapper } from "@vue/test-utils"
 import { beforeEach, describe, expect } from "vitest"
 import { useGame } from "../use-game"
 import AppButton from "../components/AppButton.vue"
 
-vi.mock("../utils.ts", async () => await vi.importActual("../utils.ts"))
-vi.mock("../constants.ts", async () => await vi.importActual("../constants.ts"))
 
 describe("Stats", () => {
   const { updateScore, reset } = useGame()
@@ -21,7 +19,7 @@ describe("Stats", () => {
   })
 
   beforeEach(() => {
-    wrapper = mount(Stats)
+    wrapper = shallowMount(Stats)
     newGameButton = wrapper.findComponent(AppButton)
     listEl = wrapper.find("ul")
     vi.useFakeTimers()
@@ -29,14 +27,10 @@ describe("Stats", () => {
 
   it("component displays proper values", async () => {
     const listItems = listEl.findAll('li')
-    listItems.forEach(item => {
-      expect(item.text()).toContain("0")
-    })
+    expect(listItems.every(item => item.text().includes("0"))).toBe(true)
     updateScore(8)
     await vi.advanceTimersByTimeAsync(150)
-    listItems.forEach(item => {
-      expect(item.text()).toContain("8")
-    })
+    expect(listItems.every(item => item.text().includes("8"))).toBe(true)
   })
 
   it("new game button resets current score", async () => {
@@ -44,9 +38,7 @@ describe("Stats", () => {
 
     updateScore(8)
     await vi.advanceTimersByTimeAsync(150)
-    listItems.forEach(item => {
-      expect(item.text()).toContain("8")
-    })
+    expect(listItems.every(item => item.text().includes("8"))).toBe(true)
 
     await newGameButton.trigger("click")
     await vi.advanceTimersByTimeAsync(150)

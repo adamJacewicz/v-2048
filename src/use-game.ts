@@ -51,9 +51,9 @@ export const useGame = createSharedComposable(() => {
 			addTile()
 		}
 
+
 		const move = (key: MoveKeyType) => {
 			removeMergedTiles()
-
 			const { axis, order } = getMovementOptions(key)
 			const groupAxis = axis === Axis.X ? Axis.Y : Axis.X
 			const firstPosition = order === Order.ASC ? 0 : BOARD_SIZE - 1
@@ -73,7 +73,6 @@ export const useGame = createSharedComposable(() => {
 					}
 				})
 			}
-
 			return {
 				score, isUpdated
 			}

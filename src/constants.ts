@@ -11,14 +11,6 @@ export enum Axis {
 }
 
 
-export const keysMap: Record<Direction, ArrowKeyType> = {
-	UP: "ArrowUp",
-	DOWN: "ArrowDown",
-	LEFT: "ArrowLeft",
-	RIGHT: "ArrowRight"
-} as const
-
-
 export const movementOptions: Record<Direction, MovementOptions> = {
 	UP: { axis: Axis.Y, order: Order.ASC },
 	DOWN: { axis: Axis.Y, order: Order.DESC },
@@ -26,7 +18,7 @@ export const movementOptions: Record<Direction, MovementOptions> = {
 	RIGHT: { axis: Axis.X, order: Order.DESC }
 }
 
-export const arrowKeyList = Object.values(keysMap)
+export const arrowKeyList: ArrowKeyType[] = ["ArrowUp", "ArrowDown", "ArrowLeft", "ArrowRight"]
 
 export const popKeyframes = [
 	{ transform: "scale(1)" },

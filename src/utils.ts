@@ -4,8 +4,8 @@ import { Axis, BOARD_SIZE, movementOptions, Order } from "./constants"
 export const getRandomInteger = (min: number, max: number): number =>
 	Math.floor(Math.random() * (max - min + 1)) + min
 
-export const getRandomItem = <T>(array: T[]): T | undefined => {
-	if (array.length) return array[getRandomInteger(0, array.length - 1)]
+export const getRandomItem = <T>(array: T[]): T | undefined  => {
+	return array[getRandomInteger(0, array.length - 1)]
 }
 
 export const mergeTiles = (source: Tile, target: Tile) => {
@@ -106,5 +106,5 @@ export const getSortedTiles = ({ array, index, groupAxis, axis, order }: {
 }) => {
 	return array
 		.filter(tile => tile[groupAxis] === index)
-		.sort((a, b) => (a[axis] - b[axis]) * order)
+		.toSorted((a, b) => (a[axis] - b[axis]) * order)
 }

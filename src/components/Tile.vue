@@ -16,11 +16,11 @@
 <script setup
         lang="ts">
 import { Tile } from "../types"
-import { computed, ref, watch } from "vue"
+import { computed, useTemplateRef, watch } from "vue"
 import { Axis, BOARD_SIZE, popKeyframes } from "../constants"
 import { generateTranslationClass } from "../utils"
 
-const tileInnerRef = ref<HTMLDivElement>()
+const tileInnerRef = useTemplateRef<HTMLDivElement>("tileInnerRef")
 
 const props = defineProps<Tile>()
 
