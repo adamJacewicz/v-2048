@@ -2,7 +2,6 @@ import { beforeEach, expect } from "vitest"
 import { BOARD_SIZE } from "../constants"
 import { allPositions } from "../utils"
 import { useGame } from "../use-game"
-import { nextTick } from "vue"
 
 
 const {
@@ -72,11 +71,12 @@ describe("Game state", () => {
 
 		initial.forEach(addTile)
 		move("down")
-		expect(tiles.value).toMatchObject(resultDown)
+		expect({tiles: tiles.value}).toEqual({tiles: expect.arrayContaining(resultDown)})
 		reset()
 		initial.forEach(addTile)
 		move("left")
-		expect(tiles.value).toMatchObject(resultLeft)
+		expect({tiles: tiles.value}).toEqual({tiles: expect.arrayContaining(resultLeft)})
+
 	})
 
 	it("remove merged tiles", () => {
@@ -93,7 +93,6 @@ describe("Game state", () => {
 
 	it("gameover when there is no available cells and no tiles to merge", async () => {
 		allPositions.forEach((tile, i) => addTile({ ...tile, value: i }))
-		await nextTick()
 		expect(availablePositions.value).toHaveLength(0)
 		expect(isMergePossible.value).toBe(false)
 		expect(isGameOver.value).toBe(true)

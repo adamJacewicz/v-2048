@@ -1,8 +1,8 @@
 <template>
-  <div
+  <div id="board"
     class="relative flex aspect-[1/1] flex-wrap overflow-hidden rounded-md bg-accent-500 xs:p-1.5 p-1"
   >
-    <GameOver v-if="isGameOver" />
+
     <div
       class="h-full w-full grid"
       :class="`grid-rows-${BOARD_SIZE} grid-cols-${BOARD_SIZE}`"
@@ -20,10 +20,9 @@
 </template>
 <script setup lang="ts">
 import Tile from "components/Tile.vue"
-import GameOver from "components/GameOver.vue"
 import { useGame } from "../use-game"
 import { BOARD_SIZE } from "../constants"
 
-const { tiles, isGameOver } = useGame()
+const { tiles } = useGame()
 const blankTiles = BOARD_SIZE ** 2
 </script>

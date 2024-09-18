@@ -1,22 +1,22 @@
 import AppButton from "../components/AppButton.vue"
-import { shallowMount, VueWrapper } from "@vue/test-utils"
 import { beforeEach, describe } from "vitest"
+import { screen, render } from "@testing-library/vue"
+import "@testing-library/jest-dom"
 
 describe("AppButton", () => {
-  let wrapper: VueWrapper
-  beforeEach(() => {
-     wrapper = shallowMount(AppButton, {
-      slots: {
-        default: "mocked text",
-      },
-    })
-  })
+	beforeEach(() => {
+		render(AppButton, {
+			slots: {
+				default: "mocked"
+			}
+		})
+	})
 
-  it("has proper text", () => {
-    expect(wrapper.text()).toBe("mocked text")
-  })
+	it("has proper text", () => {
+		expect(screen.getByRole("button")).toHaveTextContent("mocked")
+	})
 
-  it("has proper class", () => {
-    expect(wrapper.classes()).toContain("bg-accent-500")
-  })
+	it("has proper class", () => {
+		expect(screen.getByRole("button")).toHaveClass("bg-accent-500")
+	})
 })

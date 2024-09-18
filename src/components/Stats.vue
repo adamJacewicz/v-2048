@@ -4,10 +4,9 @@
       <li
         v-for="item in stats"
         :key="item.label"
-        :id="item.label"
         class="min-w-[min(50%,130px)]  rounded-md bg-accent-500 p-2 text-center font-bold "
       >
-        <h5 class="text-sm text-accent-900 uppercase">{{ item.label }}</h5>
+        <p class="text-sm text-accent-900 uppercase">{{ item.label }}</p>
         <p class="text-lg leading-6 text-accent-50">
           {{ item.value }}
         </p>

@@ -4,6 +4,9 @@
     <Board />
     <Manual />
   </div>
+  <Teleport defer to="#board">
+    <GameOver v-if="isGameOver" />
+  </Teleport>
 </template>
 <script setup
         lang="ts">
@@ -11,17 +14,19 @@ import Board from "components/Board.vue"
 import Header from "components/Header.vue"
 import Manual from "components/Manual.vue"
 import { useGame } from "./use-game"
-import { onKeyStroke, useSwipe } from "@vueuse/core"
+import { onKeyStroke, useArrayDifference, useSwipe, watchTriggerable } from "@vueuse/core"
 import { MoveKeyType } from "./types"
 import { arrowKeyList } from "./constants"
+import { watch } from "vue"
+import GameOver from "components/GameOver.vue"
 
-const { move, addTile, updateScore } = useGame()
-
+const { move, addTile, tiles, updateScore, isGameOver } = useGame()
 const onMove = (direction: MoveKeyType) => {
-  const { isUpdated, score } = move(direction)
+  const score = move(direction)
   updateScore(score)
-  isUpdated && addTile()
 }
+
+
 
 useSwipe(document, {
   onSwipeEnd: (_ev, direction) => onMove(direction),

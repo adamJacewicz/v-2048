@@ -1,6 +1,7 @@
-import { shallowMount } from "@vue/test-utils"
 import { describe, expect } from "vitest"
 import Tile from "../components/Tile.vue"
+import {  render, screen } from "@testing-library/vue"
+import "@testing-library/jest-dom"
 
 vi.mock("../constants.ts", async () => ({
 	...await vi.importActual("../constants.ts"),
@@ -8,32 +9,32 @@ vi.mock("../constants.ts", async () => ({
 }))
 
 describe("Tile", () => {
+	beforeAll(() => {
+		if (!HTMLDivElement.prototype.animate) {
+			HTMLDivElement.prototype.animate = vi.fn()
+		}
+	})
+
 	it("display proper value", () => {
-		const wrapper = shallowMount(Tile, {
+		render(Tile, {
 			props: { x: 2, y: 3, value: 8, merged: false, id: "MOCKED-ID" }
 		})
-		expect(wrapper.text()).toContain("8")
-		expect(wrapper.isVisible()).toBe(true)
+		expect(screen.getByText("8")).toBeInTheDocument()
 	})
 
 	it("has proper styles and classes", async () => {
-		const wrapper = shallowMount(Tile, {
+		const { container, rerender } = render(Tile, {
 			props: { x: 2, y: 3, value: 4, merged: false, id: "MOCKED-ID" }
 		})
-		const inner = wrapper.find(".inner")
-		inner.element.animate = vi.fn()
 
-		expect(wrapper.classes()).toContain("w-1/4")
-		expect(wrapper.classes()).toContain("h-1/4")
+		expect(container.firstChild).toHaveClass("w-1/4 h-1/4 text-accent-800")
+		expect(screen.getByText("4")).toHaveClass("bg-tile-4")
+		expect(container.firstChild).toHaveStyle({ zIndex: 2 })
 
-		expect(wrapper.classes()).toContain("text-accent-800")
-		expect(inner.classes()).toContain("bg-tile-4")
-
-		await wrapper.setProps({ x: 2, y: 3, value: 16, merged: false, id: "MOCKED-ID" })
-
-		expect(wrapper.classes()).toContain("text-accent-50")
-		expect(inner.classes()).toContain("bg-tile-16")
-		expect(wrapper.element.style.zIndex).toBe("4")
-		expect(inner.element.animate).toHaveBeenCalled()
+		await rerender({ x: 2, y: 3, value: 16, merged: false, id: "MOCKED-ID" })
+		expect(container.firstChild).toHaveClass("text-accent-50")
+		expect(screen.getByText("16")).toHaveClass("bg-tile-16")
+		expect(container.firstChild).toHaveStyle({ zIndex: 4 })
+		expect(HTMLDivElement.prototype.animate).toHaveBeenCalledTimes(1)
 	})
 })

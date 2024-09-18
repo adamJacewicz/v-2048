@@ -15,7 +15,7 @@ module.exports = {
 	],
 	theme: {
 		fontFamily: {
-			sans: ["Open Sans", "sans-serif"]
+			sans: ["Roboto", "sans-serif"]
 		},
 		extend: {
 			translate: {
@@ -27,9 +27,6 @@ module.exports = {
 			},
 			screens: {
 				xs: "576px"
-			},
-			lineHeight: {
-				16: "3.5rem"
 			},
 			colors: {
 				accent: {

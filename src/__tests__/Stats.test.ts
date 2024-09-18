@@ -1,49 +1,49 @@
 import Stats from "../components/Stats.vue"
-import { DOMWrapper, shallowMount, VueWrapper } from "@vue/test-utils"
 import { beforeEach, describe, expect } from "vitest"
 import { useGame } from "../use-game"
-import AppButton from "../components/AppButton.vue"
+import { fireEvent, render, screen } from "@testing-library/vue"
 
+import "@testing-library/jest-dom"
 
 describe("Stats", () => {
-  const { updateScore, reset } = useGame()
+	const game = useGame()
+	const spy = vi.spyOn(game, "initGame")
 
-  let wrapper: VueWrapper
-  let listEl: DOMWrapper<HTMLUListElement>
-  let newGameButton: VueWrapper
+	afterEach(() => {
+		game.reset()
+		vi.clearAllMocks()
+		vi.clearAllTimers()
+	})
 
-  afterEach(() => {
-    reset()
-    vi.clearAllMocks()
-    vi.clearAllTimers()
-  })
+	beforeEach(() => {
+		render(Stats)
+		vi.useFakeTimers()
+	})
 
-  beforeEach(() => {
-    wrapper = shallowMount(Stats)
-    newGameButton = wrapper.findComponent(AppButton)
-    listEl = wrapper.find("ul")
-    vi.useFakeTimers()
-  })
+	it("component displays proper values", async () => {
+		const score = screen.getByText("score").parentElement
+		const best = screen.getByText("best").parentElement
+		expect(score).toHaveTextContent("0")
+		expect(best).toHaveTextContent("0")
+		game.updateScore(8)
+		await vi.advanceTimersByTimeAsync(150)
+		expect(score).toHaveTextContent("8")
+		expect(best).toHaveTextContent("8")
+	})
 
-  it("component displays proper values", async () => {
-    const listItems = listEl.findAll('li')
-    expect(listItems.every(item => item.text().includes("0"))).toBe(true)
-    updateScore(8)
-    await vi.advanceTimersByTimeAsync(150)
-    expect(listItems.every(item => item.text().includes("8"))).toBe(true)
-  })
+	it("new game button resets current score", async () => {
+		const score = screen.getByText("score").parentElement
+		const best = screen.getByText("best").parentElement
+		const newGameButton = screen.getByRole("button")
 
-  it("new game button resets current score", async () => {
-    const listItems = listEl.findAll('li')
-
-    updateScore(8)
-    await vi.advanceTimersByTimeAsync(150)
-    expect(listItems.every(item => item.text().includes("8"))).toBe(true)
-
-    await newGameButton.trigger("click")
-    await vi.advanceTimersByTimeAsync(150)
-    const [scoreEl, bestEl] = listItems
-    expect(scoreEl.text()).toContain("0")
-    expect(bestEl.text()).toContain("8")
-  })
+		game.updateScore(8)
+		await vi.advanceTimersByTimeAsync(150)
+		expect(score).toHaveTextContent("8")
+		expect(best).toHaveTextContent("8")
+		await fireEvent.click(newGameButton)
+		await vi.advanceTimersByTimeAsync(150)
+		expect(score).toHaveTextContent("0")
+		expect(best).toHaveTextContent("8")
+		expect(spy).toHaveBeenCalled()
+	})
 })

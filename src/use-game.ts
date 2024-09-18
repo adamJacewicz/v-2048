@@ -1,5 +1,5 @@
 import { GameState, MoveKeyType, Tile } from "./types"
-import { computed, toRefs } from "vue"
+import { computed, nextTick, ref, toRefs, unref } from "vue"
 import {
 	allPositions,
 	createTile,
@@ -12,7 +12,13 @@ import {
 	mergeTiles
 } from "./utils"
 import { Axis, BOARD_SIZE, Order } from "./constants"
-import { createSharedComposable, useStorage } from "@vueuse/core"
+import {
+	createSharedComposable,
+	useArrayDifference,
+	useCloned,
+	useStorage,
+	watchPausable,
+} from "@vueuse/core"
 
 
 function getInitialState(): GameState {
@@ -29,11 +35,8 @@ export const useGame = createSharedComposable(() => {
 
 		const updateScore = (value: number) => {
 			score.value += value
-			if (score.value > best.value) {
-				best.value = score.value
-			}
+			best.value = Math.max(score.value, best.value)
 		}
-
 
 		const removeMergedTiles = () => {
 			tiles.value = tiles.value.filter(({ merged }) => !merged)
@@ -45,7 +48,7 @@ export const useGame = createSharedComposable(() => {
 			score.value = 0
 		}
 
-		const initGame = () => {
+		const initGame = async () => {
 			reset()
 			addTile()
 			addTile()
@@ -58,24 +61,27 @@ export const useGame = createSharedComposable(() => {
 			const groupAxis = axis === Axis.X ? Axis.Y : Axis.X
 			const firstPosition = order === Order.ASC ? 0 : BOARD_SIZE - 1
 			let score = 0
-			let isUpdated = false
+			const { cloned } = useCloned(tiles)
 			for (let i = 0; i < BOARD_SIZE; i++) {
-				const row = getSortedTiles({ array: tiles.value, index: i, axis, order, groupAxis })
+				const row = getSortedTiles({ array: cloned.value, index: i, axis, order, groupAxis })
 				row.forEach((tile, i) => {
 					const prev = row[i - 1]
 					const position = !!prev ? prev[axis] + order : firstPosition
 					if (!!prev && !prev.merged && tile.value === prev.value) {
-						score += mergeTiles(tile, prev)
-						isUpdated = true
+						score += prev.value * 2
+						mergeTiles(tile, prev)
 					} else if (tile[axis] !== position) {
-						isUpdated = true
 						tile[axis] = position
 					}
 				})
 			}
-			return {
-				score, isUpdated
+			const diff = useArrayDifference(cloned.value, tiles.value, (a, b) => Object.keys(a).every(key => a[key] === b[key]))
+			tiles.value = cloned.value
+			if (diff.value.length) {
+				addTile()
 			}
+
+			return score
 		}
 
 		const addTile = (tile?: Partial<Tile>): void => {
