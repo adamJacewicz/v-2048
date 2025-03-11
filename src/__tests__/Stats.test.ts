@@ -1,49 +1,48 @@
 import Stats from "../components/Stats.vue"
-import { beforeEach, describe, expect } from "vitest"
+import { beforeEach, describe, expect, vi } from "vitest"
+import { fireEvent, render, screen, waitFor } from "@testing-library/vue"
 import { useGame } from "../use-game"
-import { fireEvent, render, screen } from "@testing-library/vue"
-
 import "@testing-library/jest-dom"
 
 describe("Stats", () => {
-	const game = useGame()
-	const spy = vi.spyOn(game, "initGame")
+  const game = useGame()
+  const spy = vi.spyOn(game, "initGame")
 
-	afterEach(() => {
-		game.reset()
-		vi.clearAllMocks()
-		vi.clearAllTimers()
-	})
+  afterEach(() => {
+    game.reset()
+  })
 
-	beforeEach(() => {
-		render(Stats)
-		vi.useFakeTimers()
-	})
+  beforeEach(() => {
+    render(Stats)
+  })
 
-	it("component displays proper values", async () => {
-		const score = screen.getByText("score").parentElement
-		const best = screen.getByText("best").parentElement
-		expect(score).toHaveTextContent("0")
-		expect(best).toHaveTextContent("0")
-		game.updateScore(8)
-		await vi.advanceTimersByTimeAsync(150)
-		expect(score).toHaveTextContent("8")
-		expect(best).toHaveTextContent("8")
-	})
+  it("component displays proper values", async () => {
+    const [scoreItem, bestItem] = screen.getAllByRole("listitem")
 
-	it("new game button resets current score", async () => {
-		const score = screen.getByText("score").parentElement
-		const best = screen.getByText("best").parentElement
-		const newGameButton = screen.getByRole("button")
+    expect(scoreItem).toHaveTextContent("0")
+    expect(bestItem).toHaveTextContent("0")
+    game.updateScore(8)
 
-		game.updateScore(8)
-		await vi.advanceTimersByTimeAsync(150)
-		expect(score).toHaveTextContent("8")
-		expect(best).toHaveTextContent("8")
-		await fireEvent.click(newGameButton)
-		await vi.advanceTimersByTimeAsync(150)
-		expect(score).toHaveTextContent("0")
-		expect(best).toHaveTextContent("8")
-		expect(spy).toHaveBeenCalled()
-	})
+    await waitFor(() => {
+      expect(scoreItem).toHaveTextContent("8")
+      expect(bestItem).toHaveTextContent("8")
+    })
+  })
+
+  it("new game button resets current score", async () => {
+    const [scoreItem, bestItem] = screen.getAllByRole("listitem")
+    const newGameButton = screen.getByRole("button")
+
+    game.updateScore(8)
+    await waitFor(() => {
+      expect(scoreItem).toHaveTextContent("8")
+      expect(bestItem).toHaveTextContent("8")
+    })
+    await fireEvent.click(newGameButton)
+    await waitFor(() => {
+      expect(scoreItem).toHaveTextContent("0")
+      expect(bestItem).toHaveTextContent("8")
+    })
+    expect(spy).toHaveBeenCalledOnce()
+  })
 })

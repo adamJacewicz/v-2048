@@ -8,24 +8,21 @@
     <GameOver v-if="isGameOver" />
   </Teleport>
 </template>
-<script setup
-        lang="ts">
+<script setup lang="ts">
 import Board from "components/Board.vue"
 import Header from "components/Header.vue"
 import Manual from "components/Manual.vue"
 import { useGame } from "./use-game"
-import { onKeyStroke, useArrayDifference, useSwipe, watchTriggerable } from "@vueuse/core"
+import { onKeyStroke, useSwipe } from "@vueuse/core"
 import { MoveKeyType } from "./types"
 import { arrowKeyList } from "./constants"
-import { watch } from "vue"
 import GameOver from "components/GameOver.vue"
 
-const { move, addTile, tiles, updateScore, isGameOver } = useGame()
+const { move, updateScore, isGameOver } = useGame()
 const onMove = (direction: MoveKeyType) => {
   const score = move(direction)
   updateScore(score)
 }
-
 
 
 useSwipe(document, {
