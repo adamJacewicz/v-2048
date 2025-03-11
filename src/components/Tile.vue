@@ -1,20 +1,13 @@
 <template>
-  <div
-    :style="tileStyles"
-    :class="tileClasses"
-    class="xs:p-1.5 p-1 text-4xl xs:text-5xl font-bold duration-200 absolute"
-  >
-    <div
-      ref="tileInnerRef"
-      :class="backgroundClass"
-      class="inner flex-col flex h-full items-center justify-center rounded-md"
-    >
+  <div :style="tileStyles" :class="tileClasses"
+    class="xs:p-1.5 p-1 text-4xl xs:text-5xl font-bold duration-200 absolute">
+    <div ref="tileInnerRef" :class="backgroundClass"
+      class="inner flex-col flex h-full items-center justify-center rounded-md">
       {{ value }}
     </div>
   </div>
 </template>
-<script setup
-        lang="ts">
+<script setup lang="ts">
 import { Tile } from "../types"
 import { computed, useTemplateRef, watch } from "vue"
 import { Axis, BOARD_SIZE, popKeyframes } from "../constants"
@@ -25,12 +18,12 @@ const tileInnerRef = useTemplateRef<HTMLDivElement>("tileInnerRef")
 const props = defineProps<Tile>()
 
 const tileClasses = computed(() => {
-    return [
-      props.value < 8 ? "text-accent-800" : "text-accent-50",
-      Object.values(Axis).map(axis => generateTranslationClass(axis, props[axis])),
-      `w-1/${BOARD_SIZE} h-1/${BOARD_SIZE}`
-    ]
-  }
+  return [
+    props.value < 8 ? "text-accent-800" : "text-accent-50",
+    Object.values(Axis).map(axis => generateTranslationClass(axis, props[axis])),
+    `w-1/${BOARD_SIZE} h-1/${BOARD_SIZE}`
+  ]
+}
 )
 
 const backgroundClass = computed(() => {
@@ -41,8 +34,8 @@ const backgroundClass = computed(() => {
 
 
 const tileStyles = computed(() => ({
-    zIndex: props.merged ? 0 : Math.log2(props.value)
-  }
+  zIndex: props.merged ? 0 : Math.log2(props.value)
+}
 ))
 
 watch(() => props.value, () => {
@@ -52,8 +45,7 @@ watch(() => props.value, () => {
 
 }, { flush: "post" })
 </script>
-<style scoped
-       lang="scss">
+<style scoped lang="scss">
 @keyframes Scale {
   0% {
     transform: scale(0);

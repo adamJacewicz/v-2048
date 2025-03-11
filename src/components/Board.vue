@@ -1,17 +1,8 @@
 <template>
-  <div id="board"
-    class="relative flex aspect-[1/1] flex-wrap overflow-hidden rounded-md bg-accent-500 xs:p-1.5 p-1"
-  >
+  <div id="board" class="relative flex aspect-[1/1] flex-wrap overflow-hidden rounded-md bg-accent-500 xs:p-1.5 p-1">
 
-    <div
-      class="h-full w-full grid"
-      :class="`grid-rows-${BOARD_SIZE} grid-cols-${BOARD_SIZE}`"
-    >
-      <div
-        class="m-1 xs:m-1.5 rounded-md bg-tile-0"
-        :key="i"
-        v-for="i in blankTiles"
-      />
+    <div class="h-full w-full grid" :class="`grid-rows-${BOARD_SIZE} grid-cols-${BOARD_SIZE}`">
+      <div class="m-1 xs:m-1.5 rounded-md bg-tile-0" :key="i" v-for="i in blankTiles" />
     </div>
     <div class="absolute top-0 left-0 right-0 bottom-0 xs:m-1.5 m-1">
       <Tile v-bind="tile" :key="tile.id" v-for="tile in tiles" />
